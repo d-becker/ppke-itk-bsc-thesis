@@ -55,11 +55,51 @@ have not submitted this thesis in any other training program.
 \tableofcontents
 \newpage
 \section*{Abstract}
+Computations based on a structured or unstructured mesh and a localised
+``stencil'' have wide-ranging applications in scientific computing. Examples
+include fluid dynamics simulations, simulation of cellular automata and the
+solution of partial differential equations (PDEs). As such, there are
+innumerable implementations done by scientists and programmers both for one-off
+experiments and for large software used in production. In many cases, the
+computational performance achieved by such codes is vital for scientific
+exploration, therefore many utilise modern many-core architectures such as
+multi-core CPUs or GPUs.
+
+Today's wide variety of modern many-core architectures, with their differing
+programming styles, requires considerable programming effort to run applications
+efficiently, making full use of the features and characteristics of the
+available hardware. The programmer has to consider several levels of
+parallelism; even CPUs now include wide vector units in each core, as well as
+multiple cores, and various highly parallel hardware architectures, such as GPUs
+or FPGAs, can be used either in addition to or instead of CPUs. The complex
+memory hierarchies that often involve several levels of cache, which may be
+explicitly programmable, present another difficulty as the programmer has to
+take cache behaviour into account in order to make the code efficient.
+
+If a certain piece of code needs to run well on multiple architectures, the
+coding effort is multiplied, and subsequently maintenance is more difficult as
+well --- any modification has to be applied to multiple codebases.
+
+In this research project we are working on an abstraction for describing such
+computations at a high level, allowing fast experimentation and
+productivity. The abstraction is designed such that it can be automatically
+converted to various high-performance implementations.
+
+A critical feature of this abstraction is an extension to support a varying
+number of materials, or species, at each grid point in the mesh, enabling much
+more complex simulations. After examining real-world multimaterial computation
+use cases, it becomes clear that devising a scheme that handles these
+computations efficiently (both in terms of memory usage and speed) is
+non-trivial. The main reason is that in most cases the vast majority of the mesh
+cells only contain one material, which opens up the possibility for using more
+economical (both in terms of memory and speed), sparse data structures to store
+the data.
 
 \newpage
 \section*{Kivonat}
 \begin{otherlanguage}{magyar}
-% ide írd a magyar abstractot, különben angol elválasztást használ
+  % ide írd a magyar abstractot, különben angol elválasztást használ
+
 \end{otherlanguage}
 
 \chapter{Introduction}
