@@ -1,0 +1,20 @@
+# Emacs backup files
+*~
+\#*#
+
+# Latex auxiliary and log files
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.run.xml
+*.toc
+
+# Target and other files
+*.pdf
+!ITK_logo.pdf
+manual.tex
+README.md

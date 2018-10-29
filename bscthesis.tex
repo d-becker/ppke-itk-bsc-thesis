@@ -1,0 +1,84 @@
+\documentclass[fontsize=11pt, appendixprefix=true]{scrreprt}
+\usepackage[magyar, english]{babel}                        % nyelvi csomag
+\usepackage[T1]{fontenc}                                   % ékezetes betűknél is legyen automatikus elválasztás
+\usepackage[utf8]{inputenc}                                % ékezetes betűk kezelése
+\usepackage{lmodern}                                       % alapértelmezett betűtípus ne legyen pixeles
+\usepackage{mathtools}                                     % képletekhez kell
+\usepackage[style=ieee, backend=biber]{biblatex}           % bibliográfia
+\usepackage{graphicx}                                      % képek beszúrása
+\usepackage[export]{adjustbox}                             % ez az ITK logó pozicionálásához kell
+\usepackage[margin=2.5cm, bindingoffset=1.25cm]{geometry}  % margók
+\usepackage[onehalfspacing]{setspace}                      % másfeles sorköz
+\usepackage[hidelinks, unicode, pdfusetitle]{hyperref}     % kattintható tartalomjegyzék és hivatkozások
+\usepackage{bookmark}                                      % PDF könyvjelzők
+\usepackage{csquotes}                                      % a bibliográfiában megfelelően legyenek formázva az idézőjelek
+%% \DeclareQuoteAlias{dutch}{magyar}
+
+% Kódrészletekhez ajánlom
+\usepackage{listings, scrhack}
+\usepackage{sourcecodepro} % egy jó betűtípus
+\lstset{captionpos=b, numberbychapter=false, basicstyle=\ttfamily, showstringspaces=false, columns=fullflexible}
+%% \renewcommand\lstlistingname{kódrészlet}
+\makeatletter
+\renewcommand\fnum@lstlisting{\ifx\lst@@caption\@empty\else\thelstlisting.~\fi\lstlistingname}%
+\makeatother
+
+\titlehead{\includegraphics[valign=m]{ITK_logo} \parbox[c]{\textwidth}{Pázmány Péter Catholic University\\Faculty of Information Technology and Bionics}}
+\subject{Thesis}
+\addbibresource{bscthesis.bib}
+
+\author{Dániel Balázs Becker\\Computer Science Engineering BSc}
+\title{Abstracting Multimaterial Data Structures And Algorithms}
+\date{2018}
+\publishers{Supervisor:\\István Zoltán Reguly, PhD}
+
+% Nyilatkozathoz két parancs definíciója
+\newcommand{\pushtobottom}{\vspace*{\fill}}
+\newcommand{\signatureline}[1]{\begin{flushright}
+	\vspace*{.5cm}\par\noindent\makebox[2.5in]{\hrulefill}
+	\par\noindent\makebox[2.5in][c]{#1}
+	\end{flushright}
+}
+
+\begin{document}
+\maketitle
+
+\pushtobottom
+I, undersigned Dániel Balázs Becker, student of the Faculty of
+Information Technology and Bionics at Pázmány Péter Catholic University, declare
+that I have written this thesis solely myself, without any unauthorized
+help, and I have only used the sources referenced. Every part quoted word by
+word or in a paraphrased manner is indicated clearly, with a reference made. I
+have not submitted this thesis in any other training program.
+\signatureline{Signature}
+
+\tableofcontents
+\newpage
+\section*{Abstract}
+
+\newpage
+\section*{Kivonat}
+\begin{otherlanguage}{magyar}
+% ide írd a magyar abstractot, különben angol elválasztást használ
+\end{otherlanguage}
+
+\chapter{Introduction}
+
+\chapter{Description of the problem}
+\chapter{Existing solutions}
+\chapter{Presentation of the work}
+
+\section{The abstraction}
+\section{C++ implementation}
+\section{Algorithms}
+\section{Measurements?}
+
+\chapter{Future work}
+
+\chapter{Conclusion}
+
+\printbibliography
+\appendix
+\chapter{List of appendices}
+
+\end{document}

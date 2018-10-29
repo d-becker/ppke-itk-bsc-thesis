@@ -1,0 +1,94 @@
+% -*- coding: utf-8 -*-
+
+\ProvidesFile{magyar.lbx}
+[\abx@lbxid]
+\RequirePackage{ifthen}
+\InheritBibliographyExtras{english}
+\InheritBibliographyStrings{english}
+
+\DeclareRedundantLanguages{magyar}{magyar, hungarian}
+
+\renewcommand*{\finalnamedelim}{\addspace \bibstring {and}\space}
+
+\DeclareBibliographyStrings{%
+    bibliography = {{Felhasznált\addspace{}irodalom}{Felhasznált\addspace{}irodalom}},
+    references   = {{Hivatkozások}{Hivatkozások}},
+    editor       = {{szerkesztő}{szerk\adddot}},
+    byeditor     = {{szerkesztette}{szerk\adddot}},
+    editors      = {{szerkesztő}{szerk\adddot}},
+    version      = {{verzió}{ver\adddot}},
+    url          = {{elérhető}{elérhető}},
+    urlfrom      = {{elérhető}{elérhető}},
+    urlseen      = {{elérés dátuma}{elérés dátuma}},
+    in           = {{}{}},
+    page         = {{oldal}{old\adddot}},
+    pages        = {{oldal}{old\adddot}},
+    volume       = {{évfolyam}{évf\adddot}},
+    volumes      = {{évfolyam}{évf\adddot}},
+    chapter      = {{fejezet}{fej\adddot}},
+    number       = {{szám}{sz\adddot}},
+    and          = {{és}{és}},
+    andothers    = {{et\addabbrvspace al\adddot}{et\addabbrvspace al\adddot}},
+    andmore      = {{et\addabbrvspace al\adddot}{et\addabbrvspace al\adddot}},
+    phdthesis    = {{PhD\addspace{}disszertáció}{PhD\addspace{}dissz\adddot}},
+    see          = {{lásd}{ld\adddot}},
+    seealso      = {{lásd még}{ld\adddotspace még}},
+    backrefpage  = {{hivatkozási\addspace{}oldal}{hiv\adddotspace old\adddot}},
+    backrefpages = {{hivatkozási\addspace{}oldalak}{hiv\adddotspace old\adddot}},
+    january      = {{január}{jan\adddot}},
+    february     = {{február}{febr\adddot}},
+    march        = {{március}{márc\adddot}},
+    april        = {{április}{ápr\adddot}},
+    may          = {{május}{máj\adddot}},
+    june         = {{június}{jún\adddot}},
+    july         = {{július}{júl\adddot}},
+    august       = {{augusztus}{aug\adddot}},
+    september    = {{szeptember}{szept\adddot}},
+    october      = {{október}{okt\adddot}},
+    november     = {{november}{nov\adddot}},
+    december     = {{december}{dec\adddot}},
+}
+
+\DeclareBibliographyExtras{
+    \protected\def\nameprint#1#2{#1\space#2}
+    \protected\def\mkbibordinal#1{#1\adddot} % removed \stripzeros around #1
+    \protected\def\mkbibdatelong#1#2#3{% suppose that all fields are defined, until a bug pops up
+      \iffieldundef{#2}{\thefield{#1}}{%
+        \mkbibordinal{\thefield{#1}}%
+        \space%
+        \mkbibmonth{\thefield{#2}}%
+        \nobreakspace%
+        \mkbibordinal{\thefield{#3}}%
+    }}
+    \protected\def\mkbibdateshort#1#2#3{% suppose that all fields are defined, until a bug pops up
+        \mkbibordinal{\thefield{#1}}%
+        \space%
+        \mkbibordinal{\thefield{#2}}%
+        \nobreakspace%
+        \mkbibordinal{\thefield{#3}}%
+    }
+    \DeclareFieldFormat[article,periodical]{number}{#1\adddot}
+    \DeclareFieldFormat[article,periodical,inproceedings]{volume}{#1\adddot}
+    \DeclareFieldFormat[article,periodical,inproceedings]{pages}{#1\adddot\addspace\bibstring{pages}}
+    \DeclareFieldFormat[book]{chapter}{#1\adddot\addspace\bibstring{chapter}}
+    \ifthenelse{\equal{\blx@opt@eldt@style}{ieee}}{
+        \renewbibmacro*{volume+number+eid}{%
+            \iffieldundef{volume}{}{%
+	        \printfield{volume}%
+         	\addspace
+	        \bibstring{volume}%
+        	\addspace% used to be \newunit but no comma needed here
+	        }%  
+	        \iffieldundef{number}{}{%
+                \printfield{number}%
+                \addspace
+                \bibstring{number}%
+                \addspace% \newunit
+            }%
+            \addspace% \newunit
+            \printfield{eid}%
+	}
+    }{}	 
+}
+
+\endinput
