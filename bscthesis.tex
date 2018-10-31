@@ -119,6 +119,50 @@ részeként. A programok számítási teljesítménye nagy jelentőséggel bír 
 tudományos kutatásban való és egyéb felhasználás során, ezért sok implementáció
 használ modern, többmagos architektúrákat, például többmagos CPU-kat és GPU-kat.
 
+A ma elérhető modern, többmagos architektúrák sokfélesége jelentős programozói
+erőfeszítést tesz szükségessé, mivel a különböző hardvereket különböző módokon
+kell programozni, kiváltképp, ha a program hatékonyságának növelése érdekében az
+eszköz tulajdonságait a lehető legnagyobb mértékben ki szeretnénk használni. A
+párhuzamosságnak több szintjére kell odafigyelni: a modern CPU-k mindegyik magja
+tartalmaz vektorizációs egységeket, a processzorok több magból állnak, és a
+CPU-k helyett vagy mellett használhatunk nagyfokú párhuzamosságra képes
+eszközöket is, például GPU-kat vagy FPGA-kat. A komplex, hierarchikus
+memóriaarchitektúrák, amelyek több, akár explicite programozható cache-szintet
+tartalmaznak, egy újabb nehézséget jelentenek a programozó számára, mivel
+figyelembe kell vennie a cache sajátosságait ahhoz, hogy hatékony, a memóriát
+jól használó programot írjon.
+
+Ha egy adott kódnak többféle architektúrán kell hatékonyan futnia, a szükséges
+programozási munka mennyisége is megsokszorozódik, és ennek következtében a
+kódbázis karbantartása is sokkal nehezebbé váik, mivel minden változtatást több
+helyen is végre kell hajtani.
+
+A szakdolgozatom kapcsán egy olyan absztrakció létrehozásán dolgozunk, amivel a
+fent leírt számítási minták könnyen, magas szinten leírhatók, lehetővé téve a
+produktív, gyors kísérletezést. Az absztrakciót olyan módon terveztük meg, hogy
+lehetőség legyen belőle különböző hardverarchitektúrákra optimalizált kódot
+generálni automatikusan.
+
+Az absztrakció egyik legjelentősebb eleme, hogy a térháló minden pontjában
+egyszerre több anyag is jelen lehet, amivel sokkal komplexebb szimulációk
+futtatása válik lehetségessé. A már létező több anyagos szimulációk vizsgálata
+során egyértelművé vált, hogy egy olyan absztrakció kidolgozása, amely az ilyen
+számításokat mind memóriahasználat, mind futási sebesség szempontjából
+hatékonyan tudja elvégezni, nem triviális. Ennek oka az, hogy a legtöbb
+szimulációban a cellák túlnyomó többsége mindössze egy anyagot tartalmaz, ezért
+lehetőség nyílik a memóriahasználat és a futásidő tekintetében is gazdaságosabb,
+tömörített ritka adatstruktúrák használatára.
+
+Ezen szakdolgozatban bemutatjuk a megtervezett absztrakciót, amit egy a C++
+programozási nyelvbe beágyazott domain-specifikus nyelv (eDSL) formájában
+valósítunk meg. Ez azt jelenti, hogy a keretrendszer használható hagyományos
+szoftverkönyvtárként, és a megírt kód lefordítható hagyományos C++ fordítókkal
+is, de alapvetően a cél az egyes architektúrák sajátosságait hatékonyan
+kihasználó kód automatikus generálása minden támogatott hardverarchitektúrára.
+Az absztrakció ismertetése után bemutatjuk a legfontosabb számítási minták
+implementációját a leírt absztrakció segítségével, mind egy anyagos, mind több
+anyagos példákkal illusztrálva az keretrendszer használatának lehetőségeit.
+
 \end{otherlanguage}
 
 \chapter{Introduction}
