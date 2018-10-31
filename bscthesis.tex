@@ -55,23 +55,23 @@ have not submitted this thesis in any other training program.
 \tableofcontents
 \newpage
 \section*{Abstract}
-Computations based on a structured or unstructured mesh and a localised
-``stencil'' have wide-ranging applications in scientific computing. Examples
-include fluid dynamics simulations, simulation of cellular automata and the
-solution of partial differential equations (PDEs). As such, there are
-innumerable implementations done by scientists and programmers both for one-off
-experiments and for large software used in production. In many cases, the
-computational performance achieved by such codes is vital for scientific
-exploration, therefore many utilise modern many-core architectures such as
-multi-core CPUs or GPUs.
+Computations based on a structured or unstructured mesh, with the possibility of
+accessing neighbouring elements, have wide-ranging applications in scientific
+computing. Examples include fluid dynamics simulations, simulation of cellular
+automata and the solution of partial differential equations (PDEs). As such,
+there are innumerable implementations done by scientists and programmers both
+for one-off experiments and for large software used in production. In many
+cases, the computational performance achieved by such codes is vital for
+scientific exploration, therefore many utilise modern many-core architectures
+such as multi-core CPUs or GPUs.
 
 Today's wide variety of modern many-core architectures, with their differing
 programming styles, requires considerable programming effort to run applications
 efficiently, making full use of the features and characteristics of the
 available hardware. The programmer has to consider several levels of
 parallelism; even CPUs now include wide vector units in each core, as well as
-multiple cores, and various highly parallel hardware architectures, such as GPUs
-or FPGAs, can be used either in addition to or instead of CPUs. The complex
+multiple cores, and various highly parallel hardware architectures such as GPUs
+or FPGAs can be used either in addition to or instead of CPUs. The complex
 memory hierarchies that often involve several levels of cache, which may be
 explicitly programmable, present another difficulty as the programmer has to
 take cache behaviour into account in order to make the code efficient.
@@ -80,10 +80,10 @@ If a certain piece of code needs to run well on multiple architectures, the
 coding effort is multiplied, and subsequently maintenance is more difficult as
 well --- any modification has to be applied to multiple codebases.
 
-In this research project we are working on an abstraction for describing such
-computations at a high level, allowing fast experimentation and
-productivity. The abstraction is designed such that it can be automatically
-converted to various high-performance implementations.
+In my thesis we are working on an abstraction for describing such computations
+at a high level, allowing fast experimentation and productivity. The abstraction
+is designed in such a way that it can be automatically converted to various
+high-performance implementations.
 
 A critical feature of this abstraction is an extension to support a varying
 number of materials, or species, at each grid point in the mesh, enabling much
@@ -92,20 +92,47 @@ use cases, it becomes clear that devising a scheme that handles these
 computations efficiently (both in terms of memory usage and speed) is
 non-trivial. The main reason is that in most cases the vast majority of the mesh
 cells only contain one material, which opens up the possibility for using more
-economical (both in terms of memory and speed), sparse data structures to store
-the data.
+economical (both in terms of memory and speed), compressed sparse data
+structures to store the data.
+
+In this work, we present the abstraction, which comes in the form of an Embedded
+Domain Specific Language (eDSL) or ``active library'', the host language being
+C++. This means that the framework can be used as if it were a traditional
+software library and can be compiled with normal compilers, but the intended
+usage for production applications is to use source-to-source compilation,
+generating code specifically to take advantage of the target hardware
+architecture. We also present examples of the most important computational
+patterns implemented in our framework, both single material and multimaterial
+cases.
 
 \newpage
 \section*{Kivonat}
 \begin{otherlanguage}{magyar}
-  % ide írd a magyar abstractot, különben angol elválasztást használ
+A strukturált és nemstrukturált térhálókon értelmezett, szomszédos elemek
+elérését lehetővé tevő számítási minták nagyon gyakoriak a tudományos célú
+számítógépes szimulációkban, többek között fluidikai szimulációk, celluláris
+automaták szimulációja és parciális differenciálegyenletek megoldása
+esetén. Ennek következtében mind kutatók, mind programozók számtalan
+implementációt készítettek az ilyen típusú számítások elvégzésére, mind egyszeri
+kísérletek céljából, mind nagyobb, tartós használatra készült programok
+részeként. A programok számítási teljesítménye nagy jelentőséggel bír a
+tudományos kutatásban való és egyéb felhasználás során, ezért sok implementáció
+használ modern, többmagos architektúrákat, például többmagos CPU-kat és GPU-kat.
 
 \end{otherlanguage}
 
 \chapter{Introduction}
 
-\chapter{Description of the problem}
-\chapter{Existing solutions}
+\section{Description of the problem}
+
+- structured vs. unstructured described
+- goals - portable, autogeneration, separation of science code and parallellism/data structures, multimaterial
+- DSLs (maybe from the OPS article also?
+
+\section{Existing solutions}
+
+\chapter{Methods}
+
 \chapter{Presentation of the work}
 
 \section{The abstraction}
