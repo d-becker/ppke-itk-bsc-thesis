@@ -162,18 +162,54 @@ kihasználó kód automatikus generálása minden támogatott hardverarchitektú
 Az absztrakció ismertetése után bemutatjuk a legfontosabb számítási minták
 implementációját a leírt absztrakció segítségével, mind egy anyagos, mind több
 anyagos példákkal illusztrálva az keretrendszer használatának lehetőségeit.
-
 \end{otherlanguage}
 
 \chapter{Introduction}
 
+In computational simulations in various scientific fields, the class of problems
+that can be addressed by a model containing a spatial mesh, with data defined on
+its cells and possibly also its edges, has proven to be very useful. Examples of
+its use cases include computational fluid dynamics (CFD), computational
+electro-magnetics (CEM), the simulation of cellular automata as well as the
+solution of partial differential equations (PDEs).
+
+In this chapter, we give a description of the challenges faced by programmers or
+scientists who aim to make use of this computational model while trying to
+utilise the full potential of the vast array of modern, parallel hardware
+architectures available today. We describe how a high level abstraction can help
+to overcome these difficulties without undue compromises in performace. We also
+give an overview of existing approaches to this problem, and show in what ways
+our proposed abstraction differs from these or extends them.
+
 \section{Description of the problem}
 
-- structured vs. unstructured described
+\subsection{Structured vs. unstructures meshes}
+In the classification of meshes, we differentiate between structured and
+unstructured meshes. The simpler of the two types is that of structured meshes
+--- the neighbourhood relations between the mesh cells are regular and are known
+from the arrangement of data in memory. The most straightforward example is a
+rectangular (or even square) mesh in two dimensions, where the cells are
+identical rectangles or squares. If we store the data in a two dimensional
+array, the neighbours of a cell can easily be calculated by adding or
+subtracting one from the row and column indices of the cell. Structured meshes
+are very space efficient, as neighbourhood information is implicit in the
+storage pattern of the data, and no additional connectivity information needs to
+be recorded and stored.
+
+Unstructured meshes, on the other hand...
+
+
 - goals - portable, autogeneration, separation of science code and parallellism/data structures, multimaterial
-- DSLs (maybe from the OPS article also?
+- DSLs (maybe from the OPS article also)?
 
 \section{Existing solutions}
+
+\subsection{OPS}
+
+\subsection{OP2}
+OP2
+- core vs. halo -- overlapping communication and computation
+- colouring etc.
 
 \chapter{Methods}
 
