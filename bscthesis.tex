@@ -184,19 +184,33 @@ our proposed abstraction differs from these or extends them.
 \section{Description of the problem}
 
 \subsection{Structured vs. unstructures meshes}
-In the classification of meshes, we differentiate between structured and
+In the classification of mesh types, we differentiate between structured and
 unstructured meshes. The simpler of the two types is that of structured meshes
 --- the neighbourhood relations between the mesh cells are regular and are known
-from the arrangement of data in memory. The most straightforward example is a
-rectangular (or even square) mesh in two dimensions, where the cells are
+from the arrangement of the data in memory. The most straightforward example is
+a rectangular (or even square) mesh in two dimensions, where the cells are
 identical rectangles or squares. If we store the data in a two dimensional
 array, the neighbours of a cell can easily be calculated by adding or
 subtracting one from the row and column indices of the cell. Structured meshes
-are very space efficient, as neighbourhood information is implicit in the
-storage pattern of the data, and no additional connectivity information needs to
-be recorded and stored.
+are very efficient in terms of memory usage and computational performance, as
+neighbourhood information is implicit in the storage pattern of the data, and no
+additional connectivity information needs to be stored or looked up.
 
-Unstructured meshes, on the other hand...
+Unstructured meshes, on the other hand, exhibit irregular connectivity between
+the cells. The shape of the cells is often triangular in two dimensions (and
+tetrahedral in three dimensions), though other shapes are also possible. Storing
+the data in multidimensional arrays is not convenient as information about which
+cells are adjacent needs to be stored explicitly, taking up space, and often
+necessitating more expensive lookup routines than simple arithmetics.
+
+Therefore, if the problem at hand lends itself to being modelled with structured
+meshes, a more efficient solution can be achieved if we take advantage of the
+structure. However, not all problems are easily described in terms of structured
+meshes, making it necessary to consider unstructured ones as well. In some
+cases, it may also be useful to build hybrid meshes that contain structured and
+unstructured parts, leveraging the efficiency of structured meshes where the
+geometry of the problem allows it, while using an unstructured topology where it
+is necessary.
 
 
 - goals - portable, autogeneration, separation of science code and parallellism/data structures, multimaterial
