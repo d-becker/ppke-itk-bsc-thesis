@@ -191,10 +191,11 @@ from the arrangement of the data in memory. The most straightforward example is
 a rectangular (or even square) mesh in two dimensions, where the cells are
 identical rectangles or squares. If we store the data in a two dimensional
 array, the neighbours of a cell can easily be calculated by adding or
-subtracting one from the row and column indices of the cell. Structured meshes
-are very efficient in terms of memory usage and computational performance, as
-neighbourhood information is implicit in the storage pattern of the data, and no
-additional connectivity information needs to be stored or looked up.
+subtracting one (or any other number in case of broader neighbourhoods) from the
+row and column indices of the cell. Structured meshes are very efficient in
+terms of memory usage and computational performance, as neighbourhood
+information is implicit in the storage pattern of the data, and no additional
+connectivity information needs to be stored or looked up.
 
 Unstructured meshes, on the other hand, exhibit irregular connectivity between
 the cells. The shape of the cells is often triangular in two dimensions (and
@@ -202,6 +203,8 @@ tetrahedral in three dimensions), though other shapes are also possible. Storing
 the data in multidimensional arrays is not convenient as information about which
 cells are adjacent needs to be stored explicitly, taking up space, and often
 necessitating more expensive lookup routines than simple arithmetics.
+
+% TODO: picture of structured and unstructured meshes.
 
 Therefore, if the problem at hand lends itself to being modelled with structured
 meshes, a more efficient solution can be achieved if we take advantage of the
@@ -212,7 +215,40 @@ unstructured parts, leveraging the efficiency of structured meshes where the
 geometry of the problem allows it, while using an unstructured topology where it
 is necessary.
 
+\subsection{Challenges}
+In the past decades, numerous parallel hardware architectures have emerged and
+become available for scientific research. The programming models of these are
+often inherently different. CPUs, GPUs and FPGAs have varying degrees and
+underlying physical implementations of parallelism. As an example, modern CPUs
+contain multiple cores, but in each core, they usually also have vectorisation
+units for the \textit{Single instruction, multiple data (SIMD)} type of
+parallelism. This variability implies that in order to make full use of all of
+their features and characteristics, these architectures need to be programmed in
+potentially very different ways.
 
+Another difficulty that has become relevant comparatively recently is the use of
+hierarchical cache architectures. These consist of multiple layers of memory
+storage units organised such that higher-speed storage elements, which are often
+also located closer to the processing unit, have lower storage capacity than
+lower-speed elements. Main memory itself could be regarded as the last layer of
+this hierarchy (if we do not consider hard disk drives or solid state drives),
+having the highest storage capacity and the lowest speed. Efficient usage of the
+cache hierarchy is vital in many applications, as accessing data from main
+memory or from a slower cache level is potentially orders of magnitude more
+expensive than accessing data in a high-speed cache unit. On many architectures,
+manufacturers employ complex intelligent algorithms implemented within the
+hardware that facilitate optimal cache usage, but still, writing software in a
+cache-friendly way may have enormous impact on performace --- indeed,
+cache-friendly programming often essentially means writing software in a way
+that presents data to the processor such the its hardware cache algorithms can
+be as efficient as possible. Most of the time it means that data regions that
+are accessed close in time should be located close in memory. This is because
+when the processor reads from memory, it can only read a fixed amount of data
+even if it is more than immediately required. If the remaining data is the same
+as is needed by the next computation cycle, it makes it unnecessary to perform
+another (potentially very expensive) load operation from memory.
+
+\subsection{Goals}
 - goals - portable, autogeneration, separation of science code and parallellism/data structures, multimaterial
 - DSLs (maybe from the OPS article also)?
 
