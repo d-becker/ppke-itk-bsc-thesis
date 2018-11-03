@@ -227,30 +227,70 @@ their features and characteristics, these architectures need to be programmed in
 potentially very different ways.
 
 Another difficulty that has become relevant comparatively recently is the use of
-hierarchical cache architectures. These consist of multiple layers of memory
-storage units organised such that higher-speed storage elements, which are often
-also located closer to the processing unit, have lower storage capacity than
+hierarchical cache architectures. The need for those arises because the increase
+in RAM speed has not generally been able to keep up with the pace of the
+increase in processing speed. Therefore, more and more often the bottleneck in a
+computation is not caused by the processing time but by waiting for data I/O.
+
+Hierarchical cache architectures consist of multiple layers of memory storage
+units organised such that higher-speed storage elements, which are often also
+located closer to the processing unit, have lower storage capacity than
 lower-speed elements. Main memory itself could be regarded as the last layer of
 this hierarchy (if we do not consider hard disk drives or solid state drives),
 having the highest storage capacity and the lowest speed. Efficient usage of the
 cache hierarchy is vital in many applications, as accessing data from main
-memory or from a slower cache level is potentially orders of magnitude more
-expensive than accessing data in a high-speed cache unit. On many architectures,
+memory or from a slower cache level is potentially orders of magnitude slower
+than accessing data in a high-speed cache unit. On many architectures,
 manufacturers employ complex intelligent algorithms implemented within the
 hardware that facilitate optimal cache usage, but still, writing software in a
-cache-friendly way may have enormous impact on performace --- indeed,
+cache-friendly way often has enormous impact on performace --- indeed,
 cache-friendly programming often essentially means writing software in a way
 that presents data to the processor such the its hardware cache algorithms can
 be as efficient as possible. Most of the time it means that data regions that
 are accessed close in time should be located close in memory. This is because
-when the processor reads from memory, it can only read a fixed amount of data
-even if it is more than immediately required. If the remaining data is the same
-as is needed by the next computation cycle, it makes it unnecessary to perform
-another (potentially very expensive) load operation from memory.
+when the processor reads from memory, it always reads a fixed amount of data
+even if it is more than what is immediately required. If the remaining data is
+the same as is needed by the next computation cycle, it makes it unnecessary to
+perform another (potentially very expensive) load operation from memory.
+
+Scientific computations are often run on different parallel hardware devices to
+speed up the simulations and make scientific experimentation faster. However,
+programmers and scientists face a great challenge if they, because of the
+differences in programming models and memory characteristics, have to maintain
+separate code bases for each architecture. To write efficient code for these
+devices, deep low-level knowledge of them is necessary and the scientists
+needing to use them are usually not experts on any of these architectures and
+definitely not several of them. Furthermore, maintenance of the code also
+becomes more difficult, as any change introduced has to be applied to multiple
+parts of the code base.
 
 \subsection{Goals}
-- goals - portable, autogeneration, separation of science code and parallellism/data structures, multimaterial
-- DSLs (maybe from the OPS article also)?
+
+The goal of my thesis research is to design and implement an abstract interface
+using which the scientific computations on spatial meshes can be expressed
+easily, at a high level, without having to consider or even know about the
+characteristics of the hardware they are to run on or the data structures that
+should be used to make the computations efficient. The abstraction is designed
+in such a way that it is possible to automatically generate efficient,
+high-performance code for multiple hardware architectures from the code written
+using the abstraction.
+
+The separation of the scientific code from the parallelisation and data
+structure code provides a solution to the problem of scientists not being
+computer experts as well as making it unnecessary to write code by hand for
+different hardware architectures and maintaining all the versions. At the same
+time, the use of code generation, together with the careful design of the
+abstraction, makes it possible to run the computations with high performance.
+
+The abstraction also frees the user from having to interact directly with the
+data structures used in the computations. One of its main advantages is that the
+data structures behind the interface can be replaced, which is important, as
+different data structures may be optimal for different computations.
+
+A critical extension to the model that is present in our abstraction in contrast
+to existing frameworks is allowing multiple materials to be present at the same
+grid point. This allows for more complex simulations and including this new
+feature is the primary motivation behind this thesis research project.
 
 \section{Existing solutions}
 
@@ -262,6 +302,8 @@ OP2
 - colouring etc.
 
 \chapter{Methods}
+
+- DSLs (maybe from the OPS article also)?
 
 \chapter{Presentation of the work}
 
