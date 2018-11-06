@@ -6,6 +6,7 @@
 \usepackage{mathtools}                                     % képletekhez kell
 \usepackage[style=ieee, backend=biber]{biblatex}           % bibliográfia
 \usepackage{graphicx}                                      % képek beszúrása
+\graphicspath{ {./images/} }
 \usepackage[export]{adjustbox}                             % ez az ITK logó pozicionálásához kell
 \usepackage[margin=2.5cm, bindingoffset=1.25cm]{geometry}  % margók
 \usepackage[onehalfspacing]{setspace}                      % másfeles sorköz
@@ -134,7 +135,7 @@ jól használó programot írjon.
 
 Ha egy adott kódnak többféle architektúrán kell hatékonyan futnia, a szükséges
 programozási munka mennyisége is megsokszorozódik, és ennek következtében a
-kódbázis karbantartása is sokkal nehezebbé váik, mivel minden változtatást több
+kódbázis karbantartása is sokkal nehezebbé válik, mivel minden változtatást több
 helyen is végre kell hajtani.
 
 A szakdolgozatom kapcsán egy olyan absztrakció létrehozásán dolgozunk, amivel a
@@ -177,13 +178,24 @@ In this chapter, we give a description of the challenges faced by programmers or
 scientists who aim to make use of this computational model while trying to
 utilise the full potential of the vast array of modern, parallel hardware
 architectures available today. We describe how a high level abstraction can help
-to overcome these difficulties without undue compromises in performace. We also
+to overcome these difficulties without undue compromises in performance. We also
 give an overview of existing approaches to this problem, and show in what ways
 our proposed abstraction differs from these or extends them.
 
 \section{Description of the problem}
 
-\subsection{Structured vs. unstructures meshes}
+\subsection{Structured vs. unstructured meshes}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.25\textwidth]{structured_mesh}
+    \caption{Structured Cartesian grid in 3D}
+    \label{fig:structured_mesh}
+
+    \small Source: By Mysid, Slffea - Drawn in CorelDraw by Mysid, based on a %
+    JPEG by Slffea., CC BY-SA 3.0 %
+    https://commons.wikimedia.org/w/index.php?curid=1367845
+\end{figure}
+
 In the classification of mesh types, we differentiate between structured and
 unstructured meshes. The simpler of the two types is that of structured meshes
 --- the neighbourhood relations between the mesh cells are regular and are known
@@ -195,16 +207,31 @@ subtracting one (or any other number in case of broader neighbourhoods) from the
 row and column indices of the cell. Structured meshes are very efficient in
 terms of memory usage and computational performance, as neighbourhood
 information is implicit in the storage pattern of the data, and no additional
-connectivity information needs to be stored or looked up.
+connectivity information needs to be stored or looked up. An example of a
+three-dimensional structured Cartesian grid is shown in
+\autoref{fig:structured_mesh}.
 
 Unstructured meshes, on the other hand, exhibit irregular connectivity between
 the cells. The shape of the cells is often triangular in two dimensions (and
 tetrahedral in three dimensions), though other shapes are also possible. Storing
 the data in multidimensional arrays is not convenient as information about which
-cells are adjacent needs to be stored explicitly, taking up space, and often
-necessitating more expensive lookup routines than simple arithmetics.
+cells are adjacent needs to be stored explicitly, taking up space, and
+necessitating more expensive lookup routines than simple integer arithmetics. On
+the other hand, in settings where the solution varies across a large dynamic
+range, it is often advantageous to have different resolutions in different parts
+of the space, which can be accomplished easily with an unstructured mesh, in
+contrast to a structured one. An example of a two-dimensional unstructured mesh
+is shown in \autoref{fig:unstructured_mesh}.
 
-% TODO: picture of structured and unstructured meshes.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.25\textwidth]{unstructured_mesh}
+    \caption{Unstructured grid in 2D}
+    \label{fig:unstructured_mesh}
+
+    \small Source: By I, Zureks, CC BY-SA 3.0, %
+    https://commons.wikimedia.org/w/index.php?curid=2358783
+\end{figure}
 
 Therefore, if the problem at hand lends itself to being modelled with structured
 meshes, a more efficient solution can be achieved if we take advantage of the
@@ -243,7 +270,7 @@ memory or from a slower cache level is potentially orders of magnitude slower
 than accessing data in a high-speed cache unit. On many architectures,
 manufacturers employ complex intelligent algorithms implemented within the
 hardware that facilitate optimal cache usage, but still, writing software in a
-cache-friendly way often has enormous impact on performace --- indeed,
+cache-friendly way often has enormous impact on performance --- indeed,
 cache-friendly programming often essentially means writing software in a way
 that presents data to the processor such the its hardware cache algorithms can
 be as efficient as possible. Most of the time it means that data regions that
@@ -318,6 +345,8 @@ OP2
 \section{Measurements?}
 
 \chapter{Future work}
+
+Codegen, CUDA, advection
 
 \chapter{Conclusion}
 
