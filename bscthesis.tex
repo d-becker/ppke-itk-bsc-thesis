@@ -442,7 +442,16 @@ before it is overwritten in a subsequent computation is wasteful. In case of a
 crash, the state space can be recovered from the backup. The computation
 fast-forwards to the checkpoint and resumes progress from there.
 
-%% - lazy execution
+Lazy execution is another technique with which OPS seeks to improve its
+performance. It exploits the fact that the intermediary results in a sequence of
+computations (parallel loops) do not necessarily need to be computed at the
+point where they appear in the source code, and their evaluation can be delayed
+until the user actually accesses them, usually after a parallel loop involving
+reduction. At that time, all the computations in the sequence can be applied at
+once to each grid point, thereby only iterating through the mesh once, saving
+the cost of the remaining iterations. Lazy execution can also eliminate the
+computation of intermediate results that are never actually used in later
+computations.
 
 %% Optimisations
 %% - MPI messaging
