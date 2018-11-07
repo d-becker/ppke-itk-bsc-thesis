@@ -417,11 +417,11 @@ parallelism, data structure transformations, resilience and lazy execution
 patterns. In the following paragraphs, we give a brief presentation of some of
 these.
 
-OPS supports \textit{distributed memory paralellism} by automatically
+OPS supports \textit{distributed memory parallelism} by automatically
 distributing individual blocks (or a collection of blocks) across multiple MPI
 processes. The partitioning of the data is decided upon on the basis of the
 iteration ranges on the blocks and the access patterns (stencils). The goal is
-to mimimise the necessary communication between the MPI processes and balance
+to minimise the necessary communication between the MPI processes and balance
 the load evenly.  Data dependencies across partitions are satisfied using
 \textit{ghost cells} and automatic intra-block halo exchanges. Data from other
 partitions is sent in messages automatically on demand, the user does not have
@@ -442,7 +442,7 @@ before it is overwritten in a subsequent computation is wasteful. In case of a
 crash, the state space can be recovered from the backup. The computation
 fast-forwards to the checkpoint and resumes progress from there.
 
-Lazy execution is another technique with which OPS seeks to improve its
+\textit{Lazy execution} is another technique with which OPS seeks to improve its
 performance. It exploits the fact that the intermediary results in a sequence of
 computations (parallel loops) do not necessarily need to be computed at the
 point where they appear in the source code, and their evaluation can be delayed
@@ -453,10 +453,43 @@ the cost of the remaining iterations. Lazy execution can also eliminate the
 computation of intermediate results that are never actually used in later
 computations.
 
-%% Optimisations
-%% - MPI messaging
-%% - Communication avoidance
-%% - Tiling
+\subsubsection{Optimisations}
+
+Lazy execution, mostly through the fusion of sequences of parallel loops,
+enables further optimisations, some of which are described in this section.
+
+OPS uses on-demand MPI messaging, which means that data is only sent to other
+MPI processes when it is needed. However, message latency can become a
+bottleneck in many applications, therefore different optimisation strategies can
+be used to mitigate the problem. In many cases, the analysis of a sequence of
+parallel loops made available by lazy execution makes it possible to aggregate
+messages and send them at the same time, thereby reducing latency. Another
+strategy is to run an unrelated computation in parallel with messaging, hiding
+the latency of the latter. A third strategy useful in combination with the first
+two is reordering parallel loops that do not have data dependencies on each
+other in order to be able to better exploit the first two strategies.
+
+These strategies help reduce latency, but the amount of data that needs to be
+sent is not changed by them. Reduction in data exchange can be achieved by
+various communication avoidance techniques, often involving redundant
+computations and eliminating the evaluation of intermediary results that are not
+needed later in the process.
+
+A form of communication avoidance, \textit{cache blocking} or \textit{tiling}
+aims to minimise data exchange between main memory and the cache. Accessing data
+in main memory can be significantly more expensive than accessing data in cache,
+and if data often needs to be moved into and out of the cache, it can have a
+huge impact on the performance of the application. Executing a sequence of
+parallel loops on the same dataset, if applied as it written in the source code,
+executing an entire loop over the whole dataset before moving on to the next
+one, may result in repeatedly evicting the cache and moving in new data if the
+dataset does not fit in the cache. \textit{Tiling} avoids it by partitioning the
+dataset into smaller blocks or tiles and executing the whole sequence of
+parallel loops on one block at a time. This way, the same data can be reused and
+read from cache every time a parallel loop is run on the block. As OPS uses lazy
+execution and has a large amount of run-time information available such as
+iteration ranges and access patterns, discovering data dependencies, and
+consequently, partitioning the datasets into blocks, becomes much easier.
 
 \subsection{OP2}
 OP2

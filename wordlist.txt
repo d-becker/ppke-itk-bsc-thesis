@@ -2,11 +2,13 @@
 arithmetics
 CEM
 CFD
+checkpointing
 codebases
 Codegen
 CorelDraw
 CPUs
 CUDA
+dataset
 datasets
 Datasets
 DSLs
@@ -16,6 +18,8 @@ fluidikai
 FPGA
 FPGAs
 GPUs
+intra
+MPI
 multimaterial
 Mysid
 nemstrukturált
