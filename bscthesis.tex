@@ -24,7 +24,14 @@
 \renewcommand\fnum@lstlisting{\ifx\lst@@caption\@empty\else\thelstlisting.~\fi\lstlistingname}%
 \makeatother
 
-\titlehead{\includegraphics[valign=m]{ITK_logo} \parbox[c]{\textwidth}{Pázmány Péter Catholic University\\Faculty of Information Technology and Bionics}}
+\titlehead{
+  \includegraphics[valign=m]{ITK_logo}
+  \parbox[c]{\textwidth}{
+    Pázmány Péter Catholic University\\
+    Faculty of Information Technology and Bionics
+  }
+}
+
 \subject{Thesis}
 \addbibresource{bscthesis.bib}
 
@@ -319,6 +326,13 @@ to existing frameworks is allowing multiple materials to be present at the same
 grid point. This allows for more complex simulations and including this new
 feature is the primary motivation behind this thesis research project.
 
+\section{Active libraries and DSLs}
+\label{eDSLs}
+
+% TODO
+- DSLs (maybe from the OPS article also)?
+- active library
+
 \section{Existing solutions}
 
 There are multiple frameworks that address the same or similar computation
@@ -328,6 +342,113 @@ on structured meshes, and OP2 \cite{OP2}, which handles unstructured meshes.
 
 \subsection{OPS}
 
+% Introduction
+
+The OPS (Oxford Parallel Library for Structured Mesh Solvers) Domain Specific
+Active Library is a framework for parallel multi-block structured mesh
+applications. Its goal is to provide a high-level abstraction for structured
+mesh computations running on different parallel hardware architectures. The
+motivation behind the framework can be summarised as follows:
+
+\begin{itemize}
+  \item separation of the domain specific, scientific code from the low-level
+    implementation details such as data structures and explicit management of
+    parallelism, thereby making it easier to use the framework
+  \item providing a common interface for various hardware architectures
+  \item extensibility and future proofing --- if a new hardware architecture
+    appears, the framework can be extended to support it, and there is no need
+    to modify the science code using the abstraction.
+\end{itemize}
+
+The framework achieves its goals by using an eDSL embedded in C/C++ and
+generating efficient, optimised code for the desired platforms. For more
+information on eDSLs, see \autoref{eDSLs}.
+
+\subsubsection{API}
+
+The OPS API consists of four components:
+
+\begin{itemize}
+  \item Blocks: a collection of structured grid blocks with dimensionality
+    defined but with no size.
+  \item Datasets: data defined on blocks, with size.
+  \item Halos: a structure describing the connections between datasets defined
+    on different blocks.
+  \item Computations: description of a calculation on the grid, accessing
+    datasets.
+\end{itemize}
+
+In order for OPS to be able to generate correct and efficient parallelised code,
+two things are of great importance. The first is the assumption that the order
+in which the elemental operations are performed on the grid points does not
+change the overall result within machine precision. This is what allows OPS to
+parallelise the computations. The second is that the data, once fed into OPS, is
+owned by OPS and can only be accessed through opaque handlers. This makes it
+possible for the framework to apply transformations to the data, which may
+further help parallelisation and efficiency as different data structures may be
+appropriate for different kinds of architectures and computations.
+
+\subsubsection{Code generation}
+
+In OPS, there are two fundamental techniques, the combination of which is used
+to produce the parallelised and optimised implementation of the
+computations. The first is \textit{code generation}, which provides the part of
+the implementation that is specific to the target hardware architecture and
+programming language. The second is \textit{back-end logic}, which contains the
+parts of the implementation that are the same for all targets, for example data
+movement among other things.
+
+Although a single threaded, conventional header file implementation is
+available, which can be compiled with a normal C/C++ compiler, the main use case
+of OPS is using actual code generation for the target platform and
+language. This makes it possible to generate specific code for the platform and
+give the target language's compiler the largest possible amount of information,
+also taking into account the characteristics of the computation at hand. The
+target compiler can then make use of the information by optimising the resulting
+machine code. Targets for OPS include single threaded applications as well as
+parallelised ones using OpenMP, OpenACC, CUDA and OpenCL.
+
+\subsubsection{Back-end logic}
+
+\textit{Back-end logic} is the collection of algorithms that are not
+hardware-specific, but common to all targets and handle the computations at a
+higher level. Examples of these include data management, distributed memory
+parallelism, data structure transformations, resilience and lazy execution
+patterns. In the following paragraphs, we give a brief presentation of some of
+these.
+
+OPS supports \textit{distributed memory paralellism} by automatically
+distributing individual blocks (or a collection of blocks) across multiple MPI
+processes. The partitioning of the data is decided upon on the basis of the
+iteration ranges on the blocks and the access patterns (stencils). The goal is
+to mimimise the necessary communication between the MPI processes and balance
+the load evenly.  Data dependencies across partitions are satisfied using
+\textit{ghost cells} and automatic intra-block halo exchanges. Data from other
+partitions is sent in messages automatically on demand, the user does not have
+to request it explicitly. To keep the data consistent across the MPI processes,
+dirty bits are used.
+
+Unforeseen crashes, often due to hardware failure or power outage, can never be
+completely ruled out. Therefore, in long-running simulations, where restarting
+the simulation from the beginning in case of a crash is infeasible, it becomes
+important to backup the intermediary results during the computation. This
+resilience is provided by the \textit{checkpointing and recovery} mechanism of
+OPS, which saves the whole state space to disk periodically. Deciding the
+checkpoints in the computation, where the backups are performed, is a
+non-trivial task. Saving the whole state space to disk is an expensive process
+in terms of performance, therefore it should not be done too often, and
+preferably at times when the state space is small. Also, saving a dataset just
+before it is overwritten in a subsequent computation is wasteful. In case of a
+crash, the state space can be recovered from the backup. The computation
+fast-forwards to the checkpoint and resumes progress from there.
+
+%% - lazy execution
+
+%% Optimisations
+%% - MPI messaging
+%% - Communication avoidance
+%% - Tiling
+
 \subsection{OP2}
 OP2
 - core vs. halo -- overlapping communication and computation
@@ -335,7 +456,7 @@ OP2
 
 \chapter{Methods}
 
-- DSLs (maybe from the OPS article also)?
+- data structured, compression
 
 \chapter{Presentation of the work}
 
