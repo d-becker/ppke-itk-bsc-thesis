@@ -590,6 +590,46 @@ memory, and repartitioning does not necessitate additional data movement.
 
 \subsubsection{Data dependencies}
 
+Parallelisation brings with itself the possibility of race conditions, which
+must be avoided by the proper handling of data dependencies. An example of this
+is a parallel loop over edges in which two different edges attempt to increment
+the same cell (indirectly accessed through a mapping) at the same time. The two
+levels of parallelisation, distributed memory parallelisation and shared memory
+parallelisation, call for different solutions to the problem of data
+dependencies.
+
+On the level of distributed memory parallelisation, each set element (cell or
+edge) belongs to a partition owned by an MPI process. Data dependencies between
+different partitions are handled using the ``owner compute'' model, in which
+each MPI process only updates the elements that are in its own partition. In the
+case of an edge updating two cells in two different partitions, the edge
+calculation is performed in both MPI processes. This introduces redundant
+computations, but if the partitions are large enough, the proportion of
+redundant computations becomes sufficiently small to be acceptable.
+
+When a computation on a set element needs to access data from a neighbouring
+partition, MPI message passing is used to provide the data. The set elements can
+be divided into two categories: core elements do not need data from any other
+partition and can be computed without message passing, while elements in halos
+require that. This makes it possible to carry out the computations on the core
+elements in parallel to performing the MPI messaging concerning the halo
+elements. Halo elements can be further divided into elements on which redundant
+computations will be performed and elements that will only be read by
+computations in another partition.
+
+On the level of a single node, the ``owner compute'' model would be inefficient
+as the proportion of redundant computations would be significantly higher,
+presenting an unacceptable overhead. For example, on the GPU, mini-partitions (a
+part of the mesh that is handled by a single thread block) are too small and
+their halos would be two large, resulting in an increased number of redundant
+calculations. The same problem arises within a mini-partition when two threads
+attempt to update the same element simultaniously. OP2's solution is the
+``colouring'' approach in which each mini-partition (or each edge within a
+single mini-partition) is assigned a colour such that no two mini-partitions or
+edges of the same colour modify the same cell. This way, computations on
+mini-partitions and edges of the same colour can be performed in parallel. The
+colouring approach can also be used on multi-core CPUs with some modifications.
+
 \subsubsection{Data layout}
 
 %% OP2
