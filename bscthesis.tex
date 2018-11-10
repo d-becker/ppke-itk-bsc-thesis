@@ -492,13 +492,113 @@ iteration ranges and access patterns, discovering data dependencies, and
 consequently, partitioning the datasets into blocks, becomes much easier.
 
 \subsection{OP2}
-OP2
-- core vs. halo -- overlapping communication and computation
-- colouring etc.
+
+OP2 is an active library framework that essentially solves the same problems for
+unstructured meshes as does OPS for structured meshes --- the solution of
+partial differential equations (PDEs), computational electro-magnetics (CEM) and
+computational fluid dynamics (CFD), among others. The means by which the two
+frameworks operate are also the same as OP2, just like OPS, uses the concept of
+Embedded Domain Specific Languages (eDSLs) to provide a way to generate
+efficient parallelised code for different hardware architectures. The OP2 API
+comes in two forms, both of which are eDSLs --- one of them is embedded in
+C/C++, the other in Fortran.
+
+\subsubsection{API}
+
+The OP2 API consists of four main building blocks:
+
+\begin{itemize}
+  \item sets
+  \item data on sets
+  \item connectivity
+  \item operations over sets
+\end{itemize}
+
+The elements of the most common types of sets are edges and (triangular or
+quadrilateral) faces, though other types are also allowed. Data defined on sets
+may include coordinates and edge weight among other things. As the mesh that the
+set elements constitute parts of is unstructured, it is necessary to explicitly
+define the connections between the elements of different sets --- which elements
+of a set are adjacent to which elements of other sets. This is done by the
+connectivity objects, which are also called mappings.
+
+Operations over the sets are parallel loops that iterate over the elements of
+one set, possibly accessing (reading, writing or both) the elements of other
+sets through the mappings. If a loop accesses elements of other sets through the
+mappings, it is called an indirect loop, otherwise it is referred to as a direct
+loop.
+
+The code written using the OP2 abstraction is analysed by the OP2
+source-to-source compiler, which generates efficient parallelised source code
+for the target platform. This can then be compiled with traditional compilers
+and linked against the platform specific OP2 backend. The design of the OP2
+interface allows the source-to-source compiler to apply optimisations that rely
+on information that would be very difficult or even impossible to infer had the
+code been written in the form of normal, sequential loops.
+
+As is the case with OPS, the OP2 framework also requires that the order in which
+the operations are applied to the mesh elements should not affect the final
+result within machine precision. This restriction is vital in order to allow OP2
+to achieve the greatest possible amount of parallelism, thereby significantly
+improving performance. Although this strategy comes at the price of giving up
+bitwise reproducibility, in the vast majority of applications the gains in
+performance far outweigh the negative effects, which, if needed, can be
+mitigated by other means such as increasing the floating-point precision of the
+calculations.
+
+Another limitation of the framework is that OP2 does not support double
+indirection along the mappings, i.e. starting from an element, accessing a
+connecting element in another set through a mapping and then, from that element,
+accessing yet another element through a different mapping of its own. In
+addition, the mappings are static and cannot change once defined.
+
+The targets supported by OP2 for code generation include single-threaded CPUs,
+single SMP systems based on multi-core CPUs using OpenMP, single NVIDIA GPUs
+using CUDA, clusters of CPUs using MPI and clusters of GPUs using MPI and CUDA.
+
+\subsubsection{Parallelisation strategy}
+
+In OP2, parallelisation is done on two levels. The first is distributed memory
+parallelisation on a cluster containing several nodes, while the second is
+parallelisation on a single node with shared memory architecture.
+
+Parallelisation on the cluster level consists of partitioning the domain and
+assigning every partition to a compute node. Import and export halos need to be
+defined on the boundaries of the partitions to make data from other partitions
+available to the compute nodes if they need it. As the size of these halos
+determines the size of the MPI messages that need to be sent between the nodes,
+the partitions should be chosen in such a way as to minimise the size of the
+halos. In a distributed system, to an even greater extent than on a single node,
+data movement (in the form of message passing) is often the most important
+performance bottleneck, therefore the partitioning scheme plays a significant
+role in making OP2 efficient.
+
+Single-node parallelisation is dependent on the target hardware
+architecture. CPUs provide multi-core shared-memory parallelism, and in addition
+to that, vector units in each core. On GPUs, one can use multiple thread blocks,
+each of which has multiple threads. Data movement between the main memory and
+the CPU cores, or the main graphics memory and the GPU cores is very expensive
+in terms of performance, thus the amount of data movement should be reduced as
+much as possible, and OP2 uses various techniques to achieve this.
+
+On the cluster level, partitioning the domain can be a very expensive operation,
+so it is usually only done once, and all stages of the computation are executed
+with the same partitions. On the other hand, on the single-node level, dividing
+the data between the individual CPU or GPU threads can be done for every stage
+of the computation, because between the stages, data is always located in main
+memory, and repartitioning does not necessitate additional data movement.
+
+\subsubsection{Data dependencies}
+
+\subsubsection{Data layout}
+
+%% OP2
+%% - core vs. halo -- overlapping communication and computation
+%% - colouring etc.
 
 \chapter{Methods}
 
-- data structured, compression
+- data structures, compression
 
 \chapter{Presentation of the work}
 
