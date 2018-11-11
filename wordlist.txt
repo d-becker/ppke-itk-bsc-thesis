@@ -19,6 +19,7 @@ fluidikai
 Fortran
 FPGA
 FPGAs
+GPLs
 GPUs
 intra
 MPI

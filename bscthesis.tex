@@ -299,6 +299,7 @@ becomes more difficult, as any change introduced has to be applied to multiple
 parts of the code base.
 
 \subsection{Goals}
+\label{Goals}
 
 The goal of my thesis research is to design and implement an abstract interface
 using which the scientific computations on spatial meshes can be expressed
@@ -326,14 +327,51 @@ to existing frameworks is allowing multiple materials to be present at the same
 grid point. This allows for more complex simulations and including this new
 feature is the primary motivation behind this thesis research project.
 
-\section{Active libraries and DSLs}
+\section{Active libraries and Domain Specific Languages}
 \label{eDSLs}
 
-% TODO
-- DSLs (maybe from the OPS article also)?
-- active library
+A technique that can be used to achieve the goals described in \autoref{Goals}
+is the usage of active libraries and Domain Specific Languages (DSLs). These
+have indeed been successfully used in the past \cite{OPS, OP2}.
+
+Domain Specific Languages are computer languages that are specifically designed
+to solve problems of a particular application domain. They can be contrasted
+with general-purpose languages (GPLs), which are intended to be used on a wide
+variety of problems, with no or very few limitations. In many cases, the
+specificity of a Domain Specific Language can make it a better choice for its
+domain than a general-purpose language, as it can exploit the characteristics of
+that domain much better as it does not have the burden of having to be equally
+suitable for a huge amount of other domains as well.
+
+Domain Specific Languages can be further divided into two categories. Elements
+of the first category, \textit{standalone} domain specific languages, define
+completely new, independent languages. The second category comprises the
+languages called \textit{embedded} domain specific languages (eDSLs). These are
+embedded in a host language that is usually a general-purpose programming
+language, sharing its syntax. Therefore, many of the compilation, analysis and
+other kinds of tools of the host language can be used with the embedded language
+as well, taking the burden of developing these tools off the shoulders of the
+developers of such embedded domain specific languages.
+
+There is a great deal of variability in how much these languages modify their
+respective host languages. Some leave them completely intact, some introduce new
+keywords and others even add new language constructs.
+
+\textit{Active libraries} are programming frameworks that look like regular
+software libraries but make use of an eDSL. Their eDSL interface does not change
+the host language at all. They can often indeed be used as traditional
+libraries, compiled and linked with the standard tools of their host language,
+but their strength lies in modifying the compilation process and handling the
+embedded DSL in a special way. The DSL code can either be compiled directly to
+assembly or machine code, or more frequently to another programming language
+using source-to-source translation. This makes it possible to implement multiple
+back-ends that compile the DSL to different target languages and possibly
+different hardware architectures. This is the case with the two frameworks
+presented in \autoref{Existing_solutions}, OPS and OP2, and this is the goal of
+the framework described in this thesis as well.
 
 \section{Existing solutions}
+\label{Existing_solutions}
 
 There are multiple frameworks that address the same or similar computation
 models and challenges to the ones presented in this thesis. In this section, we
@@ -341,8 +379,6 @@ present two such frameworks: OPS \cite{OPS}, which can be used for computations
 on structured meshes, and OP2 \cite{OP2}, which handles unstructured meshes.
 
 \subsection{OPS}
-
-% Introduction
 
 The OPS (Oxford Parallel Library for Structured Mesh Solvers) Domain Specific
 Active Library is a framework for parallel multi-block structured mesh
