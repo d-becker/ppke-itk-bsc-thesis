@@ -279,7 +279,7 @@ manufacturers employ complex intelligent algorithms implemented within the
 hardware that facilitate optimal cache usage, but still, writing software in a
 cache-friendly way often has enormous impact on performance --- indeed,
 cache-friendly programming often essentially means writing software in a way
-that presents data to the processor such the its hardware cache algorithms can
+that presents data to the processor such that its hardware cache algorithms can
 be as efficient as possible. Most of the time it means that data regions that
 are accessed close in time should be located close in memory. This is because
 when the processor reads from memory, it always reads a fixed amount of data
@@ -292,8 +292,8 @@ speed up the simulations and make scientific experimentation faster. However,
 programmers and scientists face a great challenge if they, because of the
 differences in programming models and memory characteristics, have to maintain
 separate code bases for each architecture. To write efficient code for these
-devices, deep low-level knowledge of them is necessary and the scientists
-needing to use them are usually not experts on any of these architectures and
+devices, deep low-level knowledge of them is necessary and the scientists who
+need to use them are usually not experts on any of these architectures and
 definitely not several of them. Furthermore, maintenance of the code also
 becomes more difficult, as any change introduced has to be applied to multiple
 parts of the code base.
@@ -632,7 +632,29 @@ colouring approach can also be used on multi-core CPUs with some modifications.
 
 \subsection{Evaluation}
 
+The two existing solutions presented above share most of their characteristics
+with each other, and also with the abstraction presented in this thesis. Their
+goal is to separate the scientific code from the implementation of parallelism
+and data structures, provide a common interface for different hardware
+architectures and make it easy to integrate new ones in the future. The
+solutions they use to achieve their goals are also essentially the same. Both of
+them employ one or more Embedded Domain Specific Languages (eDSLs) to provide an
+interface that looks familiar to programmers of their respective host languages,
+but use code generation to implement the highly specialised back-end logic that
+ensures that the resulting code can utilise the full potential of the hardware
+it is run on. Their differences lie in the class of problems they can be used to
+solve, namely OPS can handle structured meshes while OP2 works on unstructured
+meshes.
 
+Our abstraction differs from OPS and OP2 in that it allows defining a varying
+number of values on each grid point, independent of the other grid points. This
+introduces some new challenges that are not present in the case of OPS and OP2,
+as will be discussed later in this thesis. Currently the abstraction only
+supports structured meshes, but we are planning to extend it to include
+unstructured meshes as well. Our abstraction aims to provide a high-level eDSL
+interface embedded in modern C++ that allows the user to be productive using the
+framework, while at the same time providing enough information to the code
+generation unit so that it can generate efficient and optimised code.
 
 \chapter{Methods}
 
