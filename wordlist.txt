@@ -1,5 +1,6 @@
 2D
 arithmetics
+bitwise
 CEM
 CFD
 checkpointing
@@ -15,6 +16,7 @@ DSLs
 eDSL
 eDSLs
 fluidikai
+Fortran
 FPGA
 FPGAs
 GPUs
@@ -28,8 +30,10 @@ OpenACC
 OpenCL
 OpenMP
 parallelisation
+Parallelisation
 PDEs
 SIMD
 Slffea
+SMP
 vektorizációs
 Zureks

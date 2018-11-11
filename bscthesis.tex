@@ -531,7 +531,7 @@ loop.
 The code written using the OP2 abstraction is analysed by the OP2
 source-to-source compiler, which generates efficient parallelised source code
 for the target platform. This can then be compiled with traditional compilers
-and linked against the platform specific OP2 backend. The design of the OP2
+and linked against the platform specific OP2 back-end. The design of the OP2
 interface allows the source-to-source compiler to apply optimisations that rely
 on information that would be very difficult or even impossible to infer had the
 code been written in the form of normal, sequential loops.
@@ -630,11 +630,9 @@ edges of the same colour modify the same cell. This way, computations on
 mini-partitions and edges of the same colour can be performed in parallel. The
 colouring approach can also be used on multi-core CPUs with some modifications.
 
-\subsubsection{Data layout}
+\subsection{Evaluation}
 
-%% OP2
-%% - core vs. halo -- overlapping communication and computation
-%% - colouring etc.
+
 
 \chapter{Methods}
 
