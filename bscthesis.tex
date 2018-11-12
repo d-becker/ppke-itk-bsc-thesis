@@ -361,14 +361,14 @@ keywords and others even add new language constructs.
 software libraries but make use of an eDSL. Their eDSL interface does not change
 the host language at all. They can often indeed be used as traditional
 libraries, compiled and linked with the standard tools of their host language,
-but their strength lies in modifying the compilation process and handling the
-embedded DSL in a special way. The DSL code can either be compiled directly to
-assembly or machine code, or more frequently to another programming language
-using source-to-source translation. This makes it possible to implement multiple
-back-ends that compile the DSL to different target languages and possibly
-different hardware architectures. This is the case with the two frameworks
-presented in \autoref{Existing_solutions}, OPS and OP2, and this is the goal of
-the framework described in this thesis as well.
+but their strength lies in the usage mode that involves modifying the
+compilation process and handling the embedded DSL in a special way. The DSL code
+can either be compiled directly to assembly or machine code, or more frequently
+to another programming language using source-to-source translation. This makes
+it possible to implement multiple back-ends that compile the DSL to different
+target languages and possibly different hardware architectures. This is the case
+with the two frameworks presented in \autoref{Existing_solutions}, OPS and OP2,
+and this is the goal of the framework described in this thesis as well.
 
 \section{Existing solutions}
 \label{Existing_solutions}
@@ -694,7 +694,165 @@ generation unit so that it can generate efficient and optimised code.
 
 \chapter{Methods}
 
-- data structures, compression
+This chapter gives an overwiew of the methods and tools that were used in
+designing the interface of our abstraction.
+
+Similarly to the existing frameworks that were discussed in
+\autoref{Existing_solutions}, OPS and OP2, we use the active library approach
+for our abstraction. This provides a way to decouple the description of the
+science problem from the implementation, which is planned to be code generation
+(source-to-source compilation) for different hardware architectures and
+platforms.
+
+First we will present the challenges concerning the use of data structures
+raised by allowing a variable number of data points to be associated with each
+grid point. Afterwards, we will give some background information on the features
+of the host language of our eDSL, C++, that make it possible to embed the our
+domain specific language in it.
+
+\section{Data structures}
+
+As we have stated before, computations on structured and unstructured meshes are
+often used patterns in various scientific fields. One of them is computational
+physics, where the grid points store information about materials that are
+located at the grid points. Although in general the computations need not
+concern materials at all, in the remaining parts of this thesis, we will use
+that term for convenience.
+
+The key extension in our abstraction in comparison to existing frameworks is
+that it allows a varying number of materials to be present in each cell of the
+mesh. The number of materials in one cell is independent of the number of
+materials in the other cells. Although there are existing multimaterial codes,
+the science code in them is intermixed with the handling of data structures and
+parallelism. To our knowledge, there is no abstract, high-level framework
+separating the domain specific code from the implementation details that also
+supports multimaterial computations.
+
+In single-material computations defined on a structured mesh, the most
+straightforward way to store the data is using a possibly multidimensional array
+where the array elements correspond to the cells in the mesh. This is a compact
+representation that is also beneficial for cache locality. In the case of
+multimaterial computations where the cells contain at most \textit{M} materials,
+it would be natural to add another dimension to the array, of size \textit{M},
+and store the material data in it. This is easy to implement as it requires only
+a few changes to the existing code. Accessing the stored values is easy as only
+simple pointer arithmetics is needed. This data representation is often called
+full-matrix representation.
+
+However, if we examine the distribution of materials in real-world scientific
+simulations, it turns out that the vast majority of the cells only contain one
+material, and those cells that contain multiple materials contain only a few of
+them, usually two or three, in most cases.
+
+In the light of this, the problems of full-matrix representation become
+apparent. On the one hand, it wastes memory space --- if there are \textit{N}
+cells altogether (in all dimensions) and at most \textit{M} materials in any
+cell, then a dataset on the mesh with full-matrix representation requires $N
+\times M \times d$ bytes, where \textit{d} is the number of bytes that is needed
+to store a dataset element. But as most cells only contain one material, the
+real amount of storage needed for the dataset is better expressed by the formula
+$(1 + \epsilon) \times N \times d$, where $\epsilon$ is a small number that can
+be calculated by summing the number of all ``extra'' materials, that is,
+materials that are not the first in their cell, and dividing this number by the
+number of cells in the mesh. As the majority of the cells contain only one
+material, $\epsilon$ will be close to zero and the amount of space needed by the
+dataset will be closer to $N \times d$ than to $N \times M \times d$.
+
+On the other hand, in case of using full-matrix representation, because of the
+large number of empty array elements, also the cache locality of the data that
+actually stores information deteriorates. This can be a huge performance hit on
+modern hardware with hierarchical cache architectures, as accessing data from
+main memory can be orders of magnitude more expensive than accessing data
+residing in the cache.
+
+A third problem is the performance loss experienced when iterating through the
+cells and materials of the dataset, caused by the need to check at every
+cell-material pair if the cell really contains the material or if the array
+element for the cell-material pair is an ``empty'' element.
+
+This calls for a more compact representation of multi-material datasets defined
+on the mesh, one that, for each cell, only uses memory for materials that are
+actually present in the cell. A number of such data representation techniques
+are presented in \cite{osti_1341844}, one of which is described here.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{mixed_mat_arrays}
+    \caption{Cell-centric compact data structure.}
+    \label{fig:mixed_mat_arrays}
+
+    \small Source: \cite{osti_1341844}
+\end{figure}
+
+The data structure consists of two parts. One of them is an array that is stored
+together with the mesh, where for each mesh cell, the array contains a slot with
+the following two fields:
+
+\begin{itemize}
+  \item \textit{nmats} --- Information about the number of materials in the
+    cell. For single-material cells, the value is -1, and for multimaterial
+    cells the value is the number of materials in the cell.
+  \item \textit{imats} --- For single-material cells, the value of this field is
+    a negative number. Taking the absolute value of this number gives the id
+    number of the material in the cell. For multimaterial cells, the value is an
+    index into an array that constitutes the second part of the data
+    structure, which we call the \textit{linked list array}.
+\end{itemize}
+
+The \textit{linked list array} is a linked list backed by a one-dimensional
+(flat) contiguous array, also stored together with the mesh. It stores
+information about the materials in multimaterial cells. To every material in
+each multimaterial cell corresponds a slot in the \textit{linked list
+  array}. The slots have the following fields:
+
+\begin{itemize}
+  \item \textit{frac2cell} --- The id number of the cell this slot belongs
+    to.
+  \item \textit{material} --- The id number of the material this slot belongs
+    to.
+  \item \textit{nextfrac} --- The index in the \textit{linked list array} of the
+    next slot that corresponds to the same cell as this slot. If there is no
+    such slot, the value is -1. This field takes the role of pointers in
+    traditional heap-based linked lists. By using a linked data structure
+    instead of a plain array where materials in the same cell simply follow each
+    other, we can later add or remove materials in the cells without having to
+    move the slots that are located to the right of the slot being added or
+    removed. However, the price we have to pay for this flexibility is the need
+    for extra processing because of the added level of indirection as well as
+    the possible decrease in data locality if the array becomes fragmented, in
+    which case it may be worth reallocating it. Depending on the application, it
+    may or may not be desirable to make this compromise, and plain array-based
+    implementations instead of the linked one presented here may perform better
+    many cases.
+\end{itemize}
+
+A visualisation of the data structure is shown in
+\autoref{fig:mixed_mat_arrays}.
+
+The values belonging to the datasets defined on the mesh are stored in two
+arrays for each dataset. These arrays run parallel to the two parts of the data
+structure mentioned above. The first array contains one element for every
+cell. For single-material cells, the elements store the values corresponding to
+the only material of the cell. For multimaterial cells, the array elements are
+undefined.
+
+The dataset values for multimaterial cells are stored in the other array, which
+runs parallel to the \textit{linked list array}. If a slot in the linked list
+array has index \textit{i}, the value corresponding to it in the parallel
+dataset array is also at index \textit{i}.
+
+This data structure is called \textit{cell-centric compact data structure} in
+the referenced article. It is because in the data structure, the cell-material
+pairs are first grouped by the cells. The opposite is also possible, and the
+referenced article does indeed present a \textit{material-centric compact data
+  structure}. It depends on the nature of the computation which one provides
+better performance.
+
+\section{C++ features}
+
+%% - konkrétan hogyan néznek ki az adatszerkezetek, algoritmusok, idézni a cikkből a mérési eredményeket
+%% - C++ feature-ök, ami releváns (template-ek stb.), miért C++-t használunk
+
 
 \chapter{Presentation of the work}
 
