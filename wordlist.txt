@@ -19,13 +19,17 @@ fluidikai
 Fortran
 FPGA
 FPGAs
+frac2cell
 GPLs
 GPUs
+imats
 intra
 MPI
 multimaterial
 Mysid
 nemstrukturált
+nextfrac
+nmats
 OP2
 OpenACC
 OpenCL

@@ -694,7 +694,7 @@ generation unit so that it can generate efficient and optimised code.
 
 \chapter{Methods}
 
-This chapter gives an overwiew of the methods and tools that were used in
+This chapter gives an overview of the methods and tools that were used in
 designing the interface of our abstraction.
 
 Similarly to the existing frameworks that were discussed in
@@ -706,9 +706,9 @@ platforms.
 
 First we will present the challenges concerning the use of data structures
 raised by allowing a variable number of data points to be associated with each
-grid point. Afterwards, we will give some background information on the features
-of the host language of our eDSL, C++, that make it possible to embed the our
-domain specific language in it.
+grid point. Afterwards, we will give some background information on the one of
+the features, namely templates, of the host language of our eDSL, C++, that make
+it possible to embed the our domain specific language in it.
 
 \section{Data structures}
 
@@ -848,8 +848,66 @@ referenced article does indeed present a \textit{material-centric compact data
   structure}. It depends on the nature of the computation which one provides
 better performance.
 
-\section{C++ features}
+\section{C++ templates}
 
+Besides the support for object oriented programming, templates are probably the
+most important extension that C++ has added to its predecessor, the C
+language. This section gives a very brief description of some of their use
+cases, but does not aim to give a comprehensive overview of them.
+
+Templates were introduced in order to provide a way to write generic code and
+reduce code duplication. Templates exhibit a typical example of parametric
+polymorphism. Templates come in a number of varieties: function templates and
+class templates are the most frquently used, but later versions of the C++
+standard have introduced template aliases and variable templates as well.
+
+A templated entity can have a number of template parameters. Template parameters
+can be of three types:
+
+\begin{itemize}
+  \item type template parameters --- The parameter stands for a type. An example
+    of a function template with a type template parameter is shown below.
+
+    \begin{lstlisting}[language=c++]
+      template<class T>
+      T add_one(T t) {
+          return t + 1;
+      }
+    \end{lstlisting}
+  
+  \item non-type template parameters --- The template parameter is a constant
+    value of an integral or pointer type. The following example demonstrates the
+    usage of non-type template parameters in a class template representing
+    mathematical vectors.
+
+    \begin{lstlisting}[language=c++]
+      template<std::size_t N>
+      class Vector {
+          ...
+
+          private:
+              double data[N];
+      }
+    \end{lstlisting}
+
+  \item template template parameters --- The parameters are templates
+    themselves. This is a rarely used feature of C++, which can be used to model
+    higher-kinded types. An example of a function template with one template
+    template parameter and one type template paremeter is given below.
+
+    \begin{lstlisting}[language=c++]
+      template< template<typename> class Container, class T >
+      void process_container(const Container<T>& container) {
+          ...
+      }
+    \end{lstlisting}
+\end{itemize}
+
+% TODO:
+%% - parameter packs
+%% - Turing-complete purely functional language
+
+% TODO
 %% - konkrétan hogyan néznek ki az adatszerkezetek, algoritmusok, idézni a cikkből a mérési eredményeket
 %% - C++ feature-ök, ami releváns (template-ek stb.), miért C++-t használunk
 
