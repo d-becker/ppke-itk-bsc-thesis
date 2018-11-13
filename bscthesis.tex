@@ -33,6 +33,7 @@
 }
 
 \subject{Thesis}
+% TDK-ra: Student Research Competition, ha nincs más hivatalos.
 \addbibresource{bscthesis.bib}
 
 \author{Dániel Balázs Becker\\Computer Science Engineering BSc}
@@ -377,6 +378,10 @@ There are multiple frameworks that address the same or similar computation
 models and challenges to the ones presented in this thesis. In this section, we
 present two such frameworks: OPS \cite{OPS}, which can be used for computations
 on structured meshes, and OP2 \cite{OP2}, which handles unstructured meshes.
+
+% TODO:
+%% Keretbe írni, hogy a multimat absztrakciónk működjön majd strukt és nemstrukt
+%% hálókon, beleépül az OPS-be és OP2-be.
 
 \subsection{OPS}
 
@@ -858,7 +863,7 @@ cases, but does not aim to give a comprehensive overview of them.
 Templates were introduced in order to provide a way to write generic code and
 reduce code duplication. Templates exhibit a typical example of parametric
 polymorphism. Templates come in a number of varieties: function templates and
-class templates are the most frquently used, but later versions of the C++
+class templates are the most frequently used, but later versions of the C++
 standard have introduced template aliases and variable templates as well.
 
 A templated entity can have a number of template parameters. Template parameters
@@ -893,7 +898,7 @@ can be of three types:
   \item template template parameters --- The parameters are templates
     themselves. This is a rarely used feature of C++, which can be used to model
     higher-kinded types. An example of a function template with one template
-    template parameter and one type template paremeter is given below.
+    template parameter and one type template parameter is given below.
 
     \begin{lstlisting}[language=c++]
       template< template<typename> class Container, class T >
@@ -903,20 +908,49 @@ can be of three types:
     \end{lstlisting}
 \end{itemize}
 
-% TODO:
-%% - parameter packs
-%% - Turing-complete purely functional language
+In addition to argument types and values, templates can be generic over the
+number of function arguments as well. This can be achieved by using variadic
+templates, available since C++11 using parameter packs. The following example
+illustrates the usage of variadic templates. The function template
+\texttt{compute} can take any number of arguments of any type, as long as the
+types have a member function called \texttt{some\_function} that takes an empty
+parameter list. The member function will be called on all of the arguments.
 
-% TODO
-%% - konkrétan hogyan néznek ki az adatszerkezetek, algoritmusok, idézni a cikkből a mérési eredményeket
-%% - C++ feature-ök, ami releváns (template-ek stb.), miért C++-t használunk
+\begin{lstlisting}[language=c++]
+  template<typename ...ARGS>
+  void compute(ARGS ...args) {
+	args.some_function()...;	
+  }
+\end{lstlisting}
 
+The implementation of templates uses the technique called monomorphisation. When
+needed, the compiler generates the concrete versions of the templated entities,
+substituting the concrete types or values for the template
+parameters. Therefore, every use of a template with different template arguments
+compiles to a different concrete class or function. This is in contrast to how
+generics are handled for example in Java, which uses type erasure, where there
+is only one concrete instantiation of a generic function or class after
+compilation. The advantages of monomorphisation over type erasure are better
+performance and the preservation of type information, while its disadvantage is
+the increased size of the resulting executable, which in some cases can also
+result in performance degradation if the code does not fit into the instruction
+cache because of its increased size.
+
+Though it was not the intention at the time of their design, C++ templates are
+Turing-complete. The template sublanguage of C++ constitutes a purely functional
+language that supports, among other things, recursion and branching, the latter
+of which can for example be implemented by partial template specialisation.
+Template metaprogramming can be used for compile-time code execution.
 
 \chapter{Presentation of the work}
 
 \section{The abstraction}
 \section{C++ implementation}
 \section{Algorithms}
+
+% TODO: Hozni példának a multi cikkből az algoritmusokat és a megvalósításukat a
+% mi kódunkkal, főleg a szomszédságosat.
+
 \section{Measurements?}
 
 \chapter{Future work}

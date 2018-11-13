@@ -1,4 +1,6 @@
 2D
+args
+ARGS
 arithmetics
 bitwise
 CEM
@@ -6,6 +8,7 @@ CFD
 checkpointing
 codebases
 Codegen
+const
 CorelDraw
 CPUs
 CUDA
@@ -24,6 +27,9 @@ GPLs
 GPUs
 imats
 intra
+kinded
+metaprogramming
+monomorphisation
 MPI
 multimaterial
 Mysid
@@ -40,5 +46,9 @@ PDEs
 SIMD
 Slffea
 SMP
+sublanguage
+templated
+typename
+variadic
 vektorizációs
 Zureks
