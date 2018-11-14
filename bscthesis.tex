@@ -324,7 +324,7 @@ data structures behind the interface can be replaced, which is important, as
 different data structures may be optimal for different computations.
 
 A critical extension to the model that is present in our abstraction in contrast
-to existing frameworks is allowing multiple materials to be present at the same
+to existing frameworks is allowing multiple materials to exist at the same
 grid point. This allows for more complex simulations and including this new
 feature is the primary motivation behind this thesis research project.
 
@@ -379,9 +379,9 @@ models and challenges to the ones presented in this thesis. In this section, we
 present two such frameworks: OPS \cite{OPS}, which can be used for computations
 on structured meshes, and OP2 \cite{OP2}, which handles unstructured meshes.
 
-% TODO:
-%% Keretbe írni, hogy a multimat absztrakciónk működjön majd strukt és nemstrukt
-%% hálókon, beleépül az OPS-be és OP2-be.
+These two frameworks are especially important in our case, as a long-term goal
+for our abstraction is to be compatible with these frameworks, both on
+structured and unstructured meshes, and possibly even become a part of them.
 
 \subsection{OPS}
 
@@ -944,7 +944,79 @@ Template metaprogramming can be used for compile-time code execution.
 
 \chapter{Presentation of the work}
 
+In this chapter, we will first give a description of the abstraction we have
+designed, then present the proof-of-concept C++ implementation which serves as a
+starting point for further development and code generation. Finally, we will
+show some examples of algorithms and computational patterns that our abstraction
+can be used to implement.
+
+In this chapter, we draw heavily from our article published in the proceedings
+of \textit{The 16th International Workshop on Cellular Nanoscale Networks and
+  their Applications}, 2018\cite{MM}.
+
 \section{The abstraction}
+
+The main component of the abstraction is an N dimensional rectangular mesh.
+%- for the remainder of the paper, we will discuss the two dimensional case.
+In the mesh, each cell corresponds to a portion of physical space. Each cell may
+contain zero, one - or in the more complex case - at most \textit{M}
+materials. Once the abstract mesh is defined, we can associate data with it -
+commonly used to store \textit{state variables}.
+
+Datasets associated with the mesh may be:
+
+\begin{itemize}
+\item Defined by cell, for example the volume of each cell. The dimensionality of the dataset will correspond to the dimensionality of the mesh.
+\item Defined by material, for example the thermal capacity of each material, invariant of cells.
+\item Defined by cell and material, for example the fractional volume of each material in each cell. The dimensionality of this dataset will be one higher than that of the mesh: we can store values for each material in each cell.
+\item In addition, datasets that are neither defined by cell nor material may be used in the computations. These are not actually associated with the mesh. They can either be scalars or one-dimensional arrays.
+\end{itemize}
+
+%% TODO: stencil csak akkor kell, ha kell szomszédelérés, ebből a bekezdésből úgy tűnik, hogy mindig kell.
+% One such dataset should be defined for each state variable. Once the mesh and the data have been defined, it is also necessary to describe the ``access patterns'', or stencils, that will be used to access data on neighbouring elements; this is simply a list of relative offsets along the different coordinate dimensions.
+
+The bulk of the code written will of course describe the algorithm: with our abstraction, an algorithm is a sequence of parallel loops over the mesh, reading values at any given point in the mesh, potentially also accessing neighbours using the pre-defined stencils, and writing values at the given grid point. The dimensionality of the loop is always defined by the dimensionality of the data that is being written - when reading, accessing lower dimensional data is also allowed (e.g. accessing material data in a cell-material loop). Reductions are also supported.
+
+Our proposed abstraction provides the following interface to manipulate the data.
+
+First, it needs to be specified which part of the spatial mesh the computation will be performed on; the iteration space. This may be the whole mesh or an N dimensional rectangular subregion of it. This can for example be useful in the handling of boundary conditions if calculating the value of a cell needs to access neighbouring cells --- choosing an appropriate subregion of the mesh guarantees that such neighbours exist.
+
+Furthermore, each computation takes a number of datasets as parameters. There are seven kinds of parameters:
+
+\begin{itemize}
+\item IN parameters are read-only, it is not possible to mutate the dataset through this parameter.
+\item OUT parameters are for writing out the results of the computation at the given grid point.
+\item REDUCE parameters can only be datasets that are either defined only by cell or only by material, or neither. These are used to store the result of a reduction operation on a full-rank matrix (defined by both cell and material) either along the material dimension or all spatial dimensions. Reductions along individual spatial dimensions may be supported in the future. An aggregation function has to be provided along with the dataset. The aggregation function must be a binary commutative and associative function (summation is a good example of that).
+\item NEIGH parameters provide read-only access to a neighbourhood of the cells. The relative offsets of the neighbours to be used need to be specified along with the dataset.
+\item INDEX parameters provide access to the spatial coordinates of the cells. These may be useful in implementing complex boundary conditions. These parameters do not take arguments, and pass an array of integers to the \textit{user kernel}.
+\item FREE\_SCALAR parameters provide read-only access to scalar values that are not associated with the mesh.
+\item FREE\_ARRAY parameters provide read-only access to one-dimensional arrays that are not associated with the mesh.
+\end{itemize}
+
+It is allowed to take a dataset both as an IN and an OUT parameter, but the effect of modifying it through the OUT parameter will not be visible when reading it through the IN parameter.
+To avoid making parallelisation much more difficult, it is forbidden to take the same dataset both as NEIGH and OUT.
+
+After providing the datasets that will be used in the computation (we will
+call these \textit{dataset parameters}), the user defines an operation to
+perform on them. This is done locally --- the user only needs to write the
+part of code that will be applied to every cell and material pair. In other
+words, they do not need to explicitly write a loop, they only write what
+would be in the innermost loop body. Indeed, there is even no need to index
+the elements of the dataset arrays. All the user needs to do is provide a
+function (a \textit{user kernel}) that takes a parameter for every dataset
+parameter. In the case of IN and OUT parameters, the parameters of the kernel
+are scalar values or references obtained by indexing the dataset with the
+given cell and material indices (in the case of datasets defined only by cell
+or only by material, the other index is ignored). For REDUCE dataset
+parameters, a special wrapper type is used as the corresponding kernel
+parameter to take care of the aggregation. In a similar manner, the kernel
+parameter corresponding to a NEIGH dataset parameter is a wrapper type
+providing access to neighbouring cell data. The kernel parameter
+corresponding to INDEX parameters is simply an N dimensional index type.  The
+order of the kernel parameters is the same as the order of the corresponding
+dataset parameters.
+
+
 \section{C++ implementation}
 \section{Algorithms}
 
