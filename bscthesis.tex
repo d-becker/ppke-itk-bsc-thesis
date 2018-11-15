@@ -1122,14 +1122,14 @@ Data<2> data({COLS, ROWS}, materials);
 CellData<2> x = data.new_cell_data();
 CellData<2> y = data.new_cell_data();
 
-Stencil<2> s9pt({{1,1},  {1,0},  {1,-1},
-                 {0,1},  {0,0},  {0,-1},
-                 {-1,1}, {-1,0}, {-1,-1}});
+Stencil<2> s9pt({
+  {1,1},  {1,0},  {1,-1},
+  {0,1},  {0,0},  {0,-1},
+  {-1,1}, {-1,0}, {-1,-1}});
 
 // Fill the datasets with data.
 	
-IndexGenerator<2> index_generator({1,   1},
-                                  {127, 127});
+IndexGenerator<2> index_generator({1, 1}, {127, 127});
 Computation<2> computation(data, index_generator);
 	
 computation.compute(
@@ -1146,94 +1146,102 @@ computation.compute(
 
 
 Once we allow cells that contain multiple materials, an additional set of
-algorithms becomes available.
-%% Once there are multiple materials per cell, there are additional types of
-%% loops. The most straightforward type is where we independently iterate over
-%% all cell-material pairs, for example to compute the mass of the material in
-%% that cell: $material\_density * material\_fractional\_volume\_in\_cell *
-%% cell\_volume$. In such a computation, density and fractional volume are
-%% defined on both cells and materials, but the cell volume is only defined on
-%% cells. Further types of computations include: accessing values of the same
-%% material on adjacent cells (e.g. locally averaged density), reduction of
-%% values along all spatial dimensions (e.g. total mass of each material on the
-%% whole mesh) and reduction of values along the material dimension (e.g. total
-%% mass of materials in each cell).
+algorithms becomes available. One of the most straightforward types is when the
+iteration is performed independently over all cell-material pairs (where the
+cell contains the material). An example is to calculate the mass of each
+material in each cell, given the density and fractional volume of each material
+in each cell and the volume of each cell. This can be computed by applying the
+following formula for every existing cell-material pair: $density \times
+material\_fractional\_volume \times cell\_volume$. In this computation,
+\textit{density} and \textit{material\_fractional\_volume} are defined by both
+cells and materials, therefore their type is \textit{CellMatData}, but the
+dataset \textit{cell\_volume} is only defined by cells, therefore its type is
+\textit{CellData}.
 
-%% The following example demonstrates a multimaterial computation with reduction.
-%% Given a \textit{density} and a \textit{volume} state variable (both defined by both cell and material), we will calculate the total mass of the materials in each cell, summing the masses of the individual materials in each cell:
+Other types of possible computations include the following features: accessing
+values of the same material on adjacent cells (for example locally averaged
+density), reduction of values along all spatial dimensions (e.g. total mass of
+each material on the whole mesh) and reduction of values along the material
+dimension (e.g. total mass of materials in each cell).
 
-%% \begin{lstlisting}
-%% const std::size_t COLS = 200;
-%% const std::size_t ROWS = 200;
-%% const std::size_t MAT_N = 50;
+The following example demonstrates a multimaterial computation with similar to
+the one describe above, but with an additional step of reduction. The problem to
+be solved is the following: given a \textit{density} and a \textit{volume} state
+variable (both defined by both cells and materials), calculate the total mass of
+the materials in each cell. This involves summing the masses of the individual
+materials in each cell.
 
-%% Data<2> data({COLS, ROWS}, MAT_N);
+\begin{lstlisting}
+const std::size_t COLS = 200;
+const std::size_t ROWS = 200;
 
-%% CellMatData<2> density
-%%     = data.new_cell_mat_data();
-%% CellMatData<2> volume
-%%     = data.new_cell_mat_data();
+// Specify which materials are present in each cell.
+const std::vector<std::vector<std::size_t>> materials = ...;
 
-%% // Fill the datasets with data.
+Data<2> data({COLS, ROWS}, materials);
 
-%% CellData<2> mass_by_cell
-%%     = data.new_cell_data();
+CellMatData<2> density = data.new_cell_mat_data();
+CellMatData<2> volume = data.new_cell_mat_data();
 
-%% auto sum = [] (double left, double right) {
-%%     return left + right;
-%% };
+// Fill the datasets with data.
 
-%% IndexGenerator<2> index_generator(
-%%                               {0, 0},
-%%                               {COLS, ROWS});
-%% Computation<2> computation(data,
-%%                            index_generator);
-%% computation.compute(
-%%     [] (double density,
-%%         double volume,
-%%         ReduceProxy mass_by_cell)
-%%     {
-%%         mass_by_cell << density * volume;
-%%     },
-%%     IN<CellMatData<2>>(density),
-%%     IN<CellMatData<2>>(volume),
-%%     REDUCE<CellData<2>>(sum, mass_by_cell));
-%% \end{lstlisting}
+CellData<2> mass_by_cell = data.new_cell_data();
 
-%% The next example illustrates the usage of mesh-invariant datasets.
+auto sum = [] (double left, double right) {
+    return left + right;
+};
 
-%% \begin{lstlisting}
-%% const std::size_t COLS = 128;
-%% const std::size_t MAT_N = 50;
+IndexGenerator<2> index_generator({0, 0}, {COLS, ROWS});
+Computation<2> computation(data, index_generator);
 
-%% Data<1> data({COLS}, MAT_N);
+computation.compute(
+    [] (double density,
+        double volume,
+        ReduceProxy mass_by_cell)
+    {
+        mass_by_cell << density * volume;
+    },
+    IN<CellMatData<2>>(density),
+    IN<CellMatData<2>>(volume),
+    REDUCE<CellData<2>>(sum, mass_by_cell));
+\end{lstlisting}
 
-%% const double dt = 1e-2;
+The next example illustrates how mesh-invariant datasets can be used.
 
-%% CellData<1> input = data.new_cell_data();
-%% CellData<1> output = data.new_cell_data();
+\begin{lstlisting}
+const std::size_t COLS = 128;
 
-%% Stencil<1> neighs({{-1}, {0}, {1}});
+// All cells are single-material and contain the same material.
+const std::vector<std::vector<std::size_t>> materials(1, 0);
 
-%% // Fill the dataset with data.
+Data<1> data({COLS}, materials);
 
-%% IndexGenerator<1> index_generator({1}, {COLS - 1});
-%% Computation<1> computation(data, index_generator);
+const double dt = 1e-2;
 
-%% computation.compute(
-%%     [] (const double dt,
-%%         const NeighProxy<CellData<1>> input,
-%%         double& output) {
-%%             output = dt * (
-%%                 - input[{-1}]
-%%                 + 2*input[{0}]
-%%                 - input[{1}]
-%%                 );
-%% 	},
-%% 	FREE_SCALAR<>(dt),
-%% 	NEIGH<CellData<1>>(input, neighs),
-%% 	OUT<CellData<1>>(output));
-%% \end{lstlisting}
+CellData<1> input = data.new_cell_data();
+CellData<1> output = data.new_cell_data();
+
+Stencil<1> neighs({{-1}, {0}, {1}});
+
+// Fill the dataset with data.
+
+IndexGenerator<1> index_generator({1}, {COLS - 1});
+Computation<1> computation(data, index_generator);
+
+computation.compute(
+    [] (const double dt,
+        const NeighProxy<CellData<1>> input,
+        double& output) {
+            output = dt * (
+                - input[{-1}]
+                + 2*input[{0}]
+                - input[{1}]
+                );
+	},
+	FREE_SCALAR<>(dt),
+	NEIGH<CellData<1>>(input, neighs),
+	OUT<CellData<1>>(output));
+\end{lstlisting}
 
 
 % TODO: Hozni példának a multi cikkből az algoritmusokat és a megvalósításukat a
@@ -1241,9 +1249,66 @@ algorithms becomes available.
 
 \section{Measurements?}
 
+%% TODO or delete
+
 \chapter{Future work}
 
-Codegen, CUDA, advection
+Although the abstract interface of our proposed framework is more or less
+stable, we have plans of adding new features in the future and the greatest part
+of the implementation is yet to be finished. This section gives an overview of
+some of the most important additions and extensions we plan to implement,
+
+Support for code generation, one of the cornerstones of the framework, is under
+development. Code generation gives much more freedom to manipulate the result of
+the compilation process than templates. Although the template sublanguage of C++
+is Turing-complete and therefore theoretically capable of performing any
+computation or algorithm that is possible to compute using any existing device,
+the extent to which templates can be used conveniently is limited. The template
+sublanguage differs from the core C++ language, which can possibly make reading
+template-heavy C++ code more difficult to read. The error messages that
+compilers generate upon finding problems in template code tend to be very
+verbose and convoluted, requiring much more effort to understand than error
+messages concerning non-template code. This makes writing and maintaining
+template-heavy code a significantly more challenging task. With explicit code
+generation, all of these problems can be addressed. Although the developers of
+the code generation modules have to take care of handling these challenges
+themselves, much better results can be achieved both in terms of convenience of
+development and in terms of the performance of the resulting executable that is
+compiled from the abstraction.
+
+Our long-term goal is using the \textit{clang} compiler front-end for code
+generation. \textit{Clang} is an open-source language front-end and
+infrastructure tooling library for C-like languages such as C, C++, Objective C
+and CUDA. As an example, it can be used to parse C++ code into an abstract
+syntax tree. As parsing C++ is notoriously difficult because of the complexity
+and context dependence of the syntax, using a tool that is well-tested and has
+been used by thousands of developers is a good decision in our opinion. However,
+the first implementation of code generation is developed in python to allow for
+more rapid experimentation.
+
+One of the main goals of the framework is to provide a common interface to
+multiple hardware architectures. At the present time, the pure C++
+implementation and the code generation module under development both target the
+CPU, with the C++ implementation even being single-threaded, although the code
+generation module does make use of parallelisation frameworks such as
+OpenMP. The next step will be adding support for Nvidia GPUs through the CUDA
+interface.
+
+Currently our abstraction only supports structured meshes, but as unstructured
+meshes also form an important category of computations, we are planning to
+integrate them into the framework.
+
+As we have stated above, reductions are only allowed either along all spatial
+dimensions at the same time or along the material dimension. Support for
+reductions along individual spatial dimensions may be introduced in the future.
+
+At present, the mesh needs to be defined statically before the computations, and
+it is not possible to alter its structure after its creation. We are planning to
+add support for advection, i. e. the movement of materials across the cells. In
+case of single-material computations, it is relatively straightforward, but
+multimaterial meshes present the additional difficulty that the number of
+materials in a cell can change as a result of the movement, which can be
+difficult to handle in the case of some data structures.
 
 \chapter{Conclusion}
 
