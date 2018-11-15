@@ -1,3 +1,4 @@
+1e
 2D
 args
 ARGS
@@ -19,6 +20,7 @@ dataset
 datasets
 Datasets
 DSLs
+dt
 eDSL
 eDSLs
 fluidikai
@@ -29,6 +31,7 @@ frac2cell
 GPLs
 GPUs
 imats
+IndexGenerator
 intra
 kinded
 MatData
@@ -38,9 +41,11 @@ MPI
 multimaterial
 Mysid
 Nanoscale
+NeighProxy
 nemstrukturált
 nextfrac
 nmats
+Nvidia
 OP2
 OpenACC
 OpenCL
@@ -48,6 +53,8 @@ OpenMP
 parallelisation
 Parallelisation
 PDEs
+ReduceProxy
+s9pt
 SIMD
 Slffea
 SMP
