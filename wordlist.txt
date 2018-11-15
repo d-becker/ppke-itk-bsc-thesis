@@ -3,9 +3,12 @@ args
 ARGS
 arithmetics
 bitwise
+CellData
+CellMatData
 CEM
 CFD
 checkpointing
+codebase
 codebases
 Codegen
 const
@@ -28,11 +31,13 @@ GPUs
 imats
 intra
 kinded
+MatData
 metaprogramming
 monomorphisation
 MPI
 multimaterial
 Mysid
+Nanoscale
 nemstrukturált
 nextfrac
 nmats

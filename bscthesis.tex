@@ -966,7 +966,6 @@ frameworks. After defining the mesh and specifying how many and which materials
 each cell contains, we can associate data with the mesh, most commonly to store
 \textit{state variables}.
 
-
 All datasets associated with the mesh have one of the following types:
 
 \begin{itemize}
@@ -1036,7 +1035,7 @@ Every parameter has one of the following seven types:
     specified along with the dataset to define the access pattern.
   \item INDEX --- Parameters of this type provide access to the spatial
     coordinates of the cells.  They can be used in implementing complex boundary
-    conditions, where modifying the interarion space is not enough.  These
+    conditions, where modifying the interaction space is not enough.  These
     parameters do not have an underlying dataset. They make the multidimensional
     index available in the \textit{user kernel} (which will be explained later)
     in the form of an array of integers.
@@ -1080,8 +1079,27 @@ To match the \textit{dataset parameters} to the \textit{user kernel} parameters,
 the order of the \textit{user kernel} parameters needs to be the same as the
 order of the corresponding \textit{dataset parameters}.
 
-
 \section{C++ implementation}
+
+Our abstraction is designed to pave the way for relatively easy and
+straightforward parallelisation through code generation. Nevertheless, the first
+step in the realisation of the framework was a pure C++ proof-of-concept
+implementation. This is a non-parallel single-threaded codebase, that instead of
+explicit code generation uses template metaprogramming, although that can be
+seen as and is indeed a form of code generation built into the C++ language
+standard.
+
+We have not made any attempts to make this implementation efficient in terms of
+run-time performance or memory footprint. The motivation behind it is solely to
+act as a proof of concept, facilitating experimentation with the abstraction and
+with the data structures used behind the scenes during the computations, for
+example to obtain preliminary measurements about the differences in speed
+between the full-matrix and the compressed data representation.
+
+This way, when the implementation of the code generation mechanism is finished,
+our framework will be a full active library, integrating all of the advantages
+of the concept.
+
 \section{Algorithms}
 
 % TODO: Hozni példának a multi cikkből az algoritmusokat és a megvalósításukat a
