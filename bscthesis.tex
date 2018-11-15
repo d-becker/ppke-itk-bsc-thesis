@@ -1102,6 +1102,140 @@ of the concept.
 
 \section{Algorithms}
 
+In this section, we will show a couple of representative examples of using the
+proposed API. The first example defines a two-dimensional mesh containing $128
+\times 128$ cells, each containing only one ``material''. A nine-point edge
+filter is applied on the grid using the user-defined stencil. To handle boundary
+conditions, the iteration space is restricted to the inner $127 \times 127$
+region of the mesh in order to ensure that all the required neighbours of all
+the cells within the iteration space exist.
+
+\begin{lstlisting}[language=c++]
+const std::size_t COLS = 128;
+const std::size_t ROWS = 128;
+
+// Each cell contains the ``material'' with id 0.
+const std::vector<std::vector<std::size_t>> materials(COLS * ROWS, 0);
+
+Data<2> data({COLS, ROWS}, materials);
+
+CellData<2> x = data.new_cell_data();
+CellData<2> y = data.new_cell_data();
+
+Stencil<2> s9pt({{1,1},  {1,0},  {1,-1},
+                 {0,1},  {0,0},  {0,-1},
+                 {-1,1}, {-1,0}, {-1,-1}});
+
+// Fill the datasets with data.
+	
+IndexGenerator<2> index_generator({1,   1},
+                                  {127, 127});
+Computation<2> computation(data, index_generator);
+	
+computation.compute(
+    [] (NeighProxy<CellData<2>> x, double& y)
+    {
+        y = 
+           -x[{1,1}]  - x[{1,0}]   - x[{1,-1}]
+           -x[{0,1}]  + 8*x[{0,0}] - x[{0,-1}]
+           -x[{-1,1}] - x[{-1,0}]  - x[{-1,-1}];
+    },
+    NEIGH<CellData<2>>(x, s9pt),
+    OUT<CellData<2>>(y));
+\end{lstlisting}
+
+
+Once we allow cells that contain multiple materials, an additional set of
+algorithms becomes available.
+%% Once there are multiple materials per cell, there are additional types of
+%% loops. The most straightforward type is where we independently iterate over
+%% all cell-material pairs, for example to compute the mass of the material in
+%% that cell: $material\_density * material\_fractional\_volume\_in\_cell *
+%% cell\_volume$. In such a computation, density and fractional volume are
+%% defined on both cells and materials, but the cell volume is only defined on
+%% cells. Further types of computations include: accessing values of the same
+%% material on adjacent cells (e.g. locally averaged density), reduction of
+%% values along all spatial dimensions (e.g. total mass of each material on the
+%% whole mesh) and reduction of values along the material dimension (e.g. total
+%% mass of materials in each cell).
+
+%% The following example demonstrates a multimaterial computation with reduction.
+%% Given a \textit{density} and a \textit{volume} state variable (both defined by both cell and material), we will calculate the total mass of the materials in each cell, summing the masses of the individual materials in each cell:
+
+%% \begin{lstlisting}
+%% const std::size_t COLS = 200;
+%% const std::size_t ROWS = 200;
+%% const std::size_t MAT_N = 50;
+
+%% Data<2> data({COLS, ROWS}, MAT_N);
+
+%% CellMatData<2> density
+%%     = data.new_cell_mat_data();
+%% CellMatData<2> volume
+%%     = data.new_cell_mat_data();
+
+%% // Fill the datasets with data.
+
+%% CellData<2> mass_by_cell
+%%     = data.new_cell_data();
+
+%% auto sum = [] (double left, double right) {
+%%     return left + right;
+%% };
+
+%% IndexGenerator<2> index_generator(
+%%                               {0, 0},
+%%                               {COLS, ROWS});
+%% Computation<2> computation(data,
+%%                            index_generator);
+%% computation.compute(
+%%     [] (double density,
+%%         double volume,
+%%         ReduceProxy mass_by_cell)
+%%     {
+%%         mass_by_cell << density * volume;
+%%     },
+%%     IN<CellMatData<2>>(density),
+%%     IN<CellMatData<2>>(volume),
+%%     REDUCE<CellData<2>>(sum, mass_by_cell));
+%% \end{lstlisting}
+
+%% The next example illustrates the usage of mesh-invariant datasets.
+
+%% \begin{lstlisting}
+%% const std::size_t COLS = 128;
+%% const std::size_t MAT_N = 50;
+
+%% Data<1> data({COLS}, MAT_N);
+
+%% const double dt = 1e-2;
+
+%% CellData<1> input = data.new_cell_data();
+%% CellData<1> output = data.new_cell_data();
+
+%% Stencil<1> neighs({{-1}, {0}, {1}});
+
+%% // Fill the dataset with data.
+
+%% IndexGenerator<1> index_generator({1}, {COLS - 1});
+%% Computation<1> computation(data, index_generator);
+
+%% computation.compute(
+%%     [] (const double dt,
+%%         const NeighProxy<CellData<1>> input,
+%%         double& output) {
+%%             output = dt * (
+%%                 - input[{-1}]
+%%                 + 2*input[{0}]
+%%                 - input[{1}]
+%%                 );
+%% 	},
+%% 	FREE_SCALAR<>(dt),
+%% 	NEIGH<CellData<1>>(input, neighs),
+%% 	OUT<CellData<1>>(output));
+%% \end{lstlisting}
+
+
 % TODO: Hozni példának a multi cikkből az algoritmusokat és a megvalósításukat a
 % mi kódunkkal, főleg a szomszédságosat.
 
