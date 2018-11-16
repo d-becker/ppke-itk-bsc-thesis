@@ -376,12 +376,18 @@ and this is the goal of the framework described in this thesis as well.
 
 There are multiple frameworks that address the same or similar computation
 models and challenges to the ones presented in this thesis. In this section, we
-present two such frameworks: OPS \cite{OPS}, which can be used for computations
-on structured meshes, and OP2 \cite{OP2}, which handles unstructured meshes.
+present two such frameworks, both of which are active libraries: OPS \cite{OPS},
+which can be used for computations on structured meshes, and OP2 \cite{OP2},
+which handles unstructured meshes.
 
 These two frameworks are especially important in our case, as a long-term goal
 for our abstraction is to be compatible with these frameworks, both on
 structured and unstructured meshes, and possibly even become a part of them.
+
+Other frameworks we should mention include ExaStencils \cite{ExaStencils}, which
+is not an active library but has a similar scope to that of OPS, ExaSlang
+\cite{ExaSlang}, which can be used for multigrid algorithms and Snowflake
+\cite{Snowflake}, which is embedded in Python but also uses code generation.
 
 \subsection{OPS}
 
@@ -689,13 +695,18 @@ meshes.
 
 Our abstraction differs from OPS and OP2 in that it allows defining a varying
 number of values on each grid point, independent of the other grid points. This
-introduces some new challenges that are not present in the case of OPS and OP2,
-as will be discussed later in this thesis. Currently the abstraction only
-supports structured meshes, but we are planning to extend it to include
-unstructured meshes as well. Our abstraction aims to provide a high-level eDSL
-interface embedded in modern C++ that allows the user to be productive using the
-framework, while at the same time providing enough information to the code
-generation unit so that it can generate efficient and optimised code.
+opens up the possibility of integrating new kinds of algorithms that are useful
+in both science and industry \cite{Explosive}, \cite{Pultrusion},
+\cite{Multimat_Lagrangian}.
+
+Allowing multimaterial computations introduces some new challenges that are not
+present in the case of OPS and OP2, as will be discussed later in this
+thesis. Currently the abstraction only supports structured meshes, but we are
+planning to extend it to include unstructured meshes as well. Our abstraction
+aims to provide a high-level eDSL interface embedded in modern C++ that allows
+the user to be productive using the framework, while at the same time providing
+enough information to the code generation unit so that it can generate efficient
+and optimised code.
 
 \chapter{Methods}
 

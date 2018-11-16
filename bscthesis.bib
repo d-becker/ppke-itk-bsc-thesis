@@ -45,3 +45,124 @@ month={August},
 journal={The 16th International Workshop on Cellular Nanoscale Networks and their Applications},
 keywords={structured meshes;stencils;PDEs;multimaterial}
 }
+
+@InProceedings{ExaStencils,
+author="Lengauer, Christian
+and Apel, Sven
+and Bolten, Matthias
+and Gr{\"o}{\ss}linger, Armin
+and Hannig, Frank
+and K{\"o}stler, Harald
+and R{\"u}de, Ulrich
+and Teich, J{\"u}rgen
+and Grebhahn, Alexander
+and Kronawitter, Stefan
+and Kuckuk, Sebastian
+and Rittich, Hannah
+and Schmitt, Christian",
+editor="Lopes, Lu{\'i}s
+and {\v{Z}}ilinskas, Julius
+and Costan, Alexandru
+and Cascella, Roberto G.
+and Kecskemeti, Gabor
+and Jeannot, Emmanuel
+and Cannataro, Mario
+and Ricci, Laura
+and Benkner, Siegfried
+and Petit, Salvador
+and Scarano, Vittorio
+and Gracia, Jos{\'e}
+and Hunold, Sascha
+and Scott, Stephen L.
+and Lankes, Stefan
+and Lengauer, Christian
+and Carretero, Jes{\'u}s
+and Breitbart, Jens
+and Alexander, Michael",
+title="ExaStencils: Advanced Stencil-Code Engineering",
+booktitle="Euro-Par 2014: Parallel Processing Workshops",
+year="2014",
+publisher="Springer International Publishing",
+address="Cham",
+pages="553--564",
+abstract="Project ExaStencils pursues a radically new approach to stencil-code engineering. Present-day stencil codes are implemented in general-purpose programming languages, such as Fortran, C, or Java, or derivates thereof, and harnesses for parallelism, such as OpenMP, OpenCL or MPI. ExaStencils favors a much more domain-specific approach with languages at several layers of abstraction, the most abstract being the mathematical formulation, the most concrete the optimized target code. At every layer, the corresponding language expresses not only computational directives but also domain knowledge of the problem and platform to be leveraged for optimization. This approach will enable a highly automated code generation at all layers and has been demonstrated successfully before in the U.S. projects FFTW and SPIRAL for certain linear transforms.",
+isbn="978-3-319-14313-2"
+}
+
+@InProceedings{ExaSlang,
+author="Schmitt, Christian
+and Kuckuk, Sebastian
+and Hannig, Frank
+and Teich, J{\"u}rgen
+and K{\"o}stler, Harald
+and R{\"u}de, Ulrich
+and Lengauer, Christian",
+editor="Bungartz, Hans-Joachim
+and Neumann, Philipp
+and Nagel, Wolfgang E.",
+title="Systems of Partial Differential Equations in ExaSlang",
+booktitle="Software for Exascale Computing - SPPEXA 2013-2015",
+year="2016",
+publisher="Springer International Publishing",
+address="Cham",
+pages="47--67",
+abstract="As HPC systems are becoming increasingly heterogeneous and diverse, writing software that attains maximum performance and scalability while remaining portable as well as easily composable is getting more and more challenging. Additionally, code that has been aggressively optimized for certain execution platforms is usually not easily portable to others without either losing a great share of performance or investing many hours by re-applying optimizations. One possible remedy is to exploit the potential given by technologies such as domain-specific languages (DSLs) that provide appropriate abstractions and allow the application of technologies like automatic code generation and auto-tuning. In the domain of geometric multigrid solvers, project ExaStencils follows this road by aiming at providing highly optimized and scalable numerical solvers, specifically tuned for a given application and target platform. Here, we introduce its DSL ExaSlang with data types for local vectors to support computations that use point-local vectors and matrices. These data types allow an intuitive modeling of many physical problems represented by systems of partial differential equations (PDEs), e.g., the simulation of flows that include vector-valued velocities.",
+isbn="978-3-319-40528-5"
+}
+
+@INPROCEEDINGS{Snowflake, 
+author={N. Zhang and M. Driscoll and C. Markley and S. Williams and P. Basu and A. Fox}, 
+booktitle={2017 IEEE International Parallel and Distributed Processing Symposium Workshops (IPDPSW)}, 
+title={Snowflake: A Lightweight Portable Stencil DSL}, 
+year={2017}, 
+volume={}, 
+number={}, 
+pages={795-804}, 
+keywords={open systems;program compilers;software libraries;Snowflake language;portable stencil DSL;stencil computations;domain specific language;microcompiler approach;domain-specific code generators;image processing stencils;scientific computing;complex boundary conditions;higher-order operators;variable coefficients;nonunit-stride iteration spaces;Python language;SciPy;iPython;Python libraries;dependence analysis;just-in-time compiler;complex scientific benchmark;HPGMG;OpenMP;Arrays;DSL;Graphics processing units;Tools;Boundary conditions;Benchmark testing;Scientific Computing;Domain-Specific Language;Python;GPU;Multicore}, 
+doi={10.1109/IPDPSW.2017.89}, 
+ISSN={}, 
+month={May},}
+
+@article{Explosive,
+title = "High explosive simulation using multi-material formulations",
+journal = "Applied Thermal Engineering",
+volume = "26",
+number = "10",
+pages = "1032 - 1042",
+year = "2006",
+issn = "1359-4311",
+doi = "https://doi.org/10.1016/j.applthermaleng.2005.10.018",
+url = "http://www.sciencedirect.com/science/article/pii/S1359431105003546",
+author = "A. Alia and M. Souli",
+keywords = "ALE multi-material formulation, High explosive, Shock wave propagation",
+abstract = "The accurate numerical simulation of air-blast is an industrial concern. Because the experimental investigation of these fast transient events is expensive and time-consuming, several numerical approaches of air explosion are carried out. In this paper, an air-blast simulation is described using Eulerian multi-material formulation. In order to validate the numerical approach and prove its ability for high pressure wave propagation, comparison of two examples with experimental results is performed. Both simulations lead to the same prediction for the pressure time history. Good agreement between the test results and the predicted pressure response is achieved."
+}
+
+@Article{Pultrusion,
+author="Joshi, Sunil C.
+and Chen, X.",
+title="Time-Variant Simulation of Multi-Material Thermal Pultrusion",
+journal="Applied Composite Materials",
+year="2011",
+month="Aug",
+day="01",
+volume="18",
+number="4",
+pages="283--296",
+abstract="Pultrusion being the viable and economical process for producing constant cross-section composite products, many variants of it are being tried out. This paper embarks on the pultrusion with multi-materials; typically of polymer foam/glass fibre reinforced polymer (GFRP) sandwich panels. Unlike conventional composites pultrusion, this process with more than two material phases, one of them dry, poses a challenge in simulating the thermal co-curing within the die. In this paper, the formulation and development of three-dimensional, finite element/nodal control volume (FE/NCV) approach for such multi-material pultrusion is presented. The numerical features for handling the dry-wet material interfaces, material shrinkage, variations in pull speed and die heating, and foam-to-skin thickness ratio are discussed. Implementation of the FE/NCV procedure and its application in analyzing pultrusion of polymer foam/GFRP sandwich panels with multi-heater environment are presented.",
+issn="1573-4897",
+doi="10.1007/s10443-010-9156-9",
+url="https://doi.org/10.1007/s10443-010-9156-9"
+}
+  	
+@article{Multimat_Lagrangian,
+ author={Qinghong Zeng},
+  title={MMALE numerical simulation for multi-material large deformation fluid flows},
+  journal={Journal of Physics: Conference Series},
+  volume={510},
+  number={1},
+  pages={012047},
+  url={http://stacks.iop.org/1742-6596/510/i=1/a=012047},
+  year={2014},
+  abstract={Multi-material arbitrary Lagrangian Eulerian (MMALE) method, coupled with moment of fluid (MOF) interface reconstruction, was studied and applied to multi-material large deformation flow problems. In MMALE method, the mesh lines are allowed to cross the material interfaces and mixed cells are introduced. In mixed cells, the MOF method is used to reconstruct the interfaces. The numerical examples show the high accuracy and resolution of MOF-MMALE, it is validated that MOF-MMALE method is an effective way to simulate flow problems of multi-material large deformation.}
+}
