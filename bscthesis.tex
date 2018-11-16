@@ -1262,9 +1262,79 @@ computation.compute(
 % TODO: Hozni példának a multi cikkből az algoritmusokat és a megvalósításukat a
 % mi kódunkkal, főleg a szomszédságosat.
 
-\section{Measurements?}
+\section{Measurements}
 
-%% TODO or delete
+In this section, we present some measurements that can be used to compare the
+efficiency of the full-matrix and the cell-centric compact representations in
+the case of hand-written code and using our framework.
+
+The measurements concerning our framework are only preliminary as the
+implementation of the code generation modules has only begun, and many
+optimisation possibilities are not exploited yet.
+
+The example problem on which the measurements were taken contains 1 million
+cells, 96\% of which contain one material, 3.9\% contain two materials, 0.06\%
+contain three materials and 0.04\% contain four materials.
+
+The code was compiled with the Intel Compiler, version 2018. The hardware was an
+Intel\textregistered Xeon\textregistered CPU E5-2660 v4 @ 2.00GHz, 14 cores, 2
+sockets (but we used only one). The operating system was Debian GNU/Linux.
+
+The test contains of three algorithms. The first algorithm computes the average
+density of the cells, the second one updates the state of each material and the
+third one computes the average density of each material over a neighbourhood of
+cells.
+
+\autoref{tab:handwritten} shows the results for the hand-written and optimised
+code. The version using OpenMP was compiled with the following options:
+\texttt{KMP\_AFFINITY=compact OMP\_NUM\_THREADS=28 numactl --cpunodebind=0}.
+
+\begin{table}[h]
+\begin{tabular}{|l|l|l|}
+\hline
+\multicolumn{1}{|c|}{\textbf{Hand-written and optimised (seconds)}} & \multicolumn{1}{c|}{Single-threaded} & \multicolumn{1}{c|}{OpenMP} \\ \hline
+Material centric full matrix, alg 1                      & 0.0742979                            & 0.0114698                   \\ \hline
+Material centric full matrix, alg 2                      & 0.063545                             & 0.0176821                   \\ \hline
+Material centric full matrix, alg 3                      & 0.081099                             & 0.020175                    \\ \hline
+Cell centric compact matrix, alg 1                       & 0.00658894                           & 0.00691891                  \\ \hline
+Cell centric compact matrix, alg 2                       & 0.00280404                           & 0.000621796                 \\ \hline
+Cell centric compact matrix, alg 3                       & 0.013417                             & 0.00448918                  \\ \hline
+\end{tabular}
+\caption {Handwritten and optimised measurements}
+\label{tab:handwritten}
+\end{table}
+
+The results clearly show that parallelisation significantly reduces the running
+time of almost all algorithms, the only exception being algorithm 1 with compact
+cell-centric representation.
+
+\autoref{tab:MM} shows the results of the tests using our framework. At present,
+only single-threaded mode is available and code generation only works with
+full-matrix representation.
+
+\begin{table}[]
+\begin{tabular}{|l|l|l|}
+\hline
+\multicolumn{1}{|c|}{\textbf{\begin{tabular}[c]{@{}c@{}}MM framework, single-threaded\\  (seconds)\end{tabular}}} & \multicolumn{1}{c|}{No code generation} & \multicolumn{1}{c|}{Code generation} \\ \hline
+Cell centric full matrix, alg 1                                                                                   & 1.27382                                 & 0.0760949                            \\ \hline
+Cell centric full matrix, alg 2                                                                                   & 1.499                                   & 0.0930922                            \\ \hline
+Cell centric full matrix, alg 3                                                                                   & 34.9193                                 & 0.571133                             \\ \hline
+Cell centric compact matrix, alg 1                                                                                & 0.0253029                               &                                      \\ \hline
+Cell centric compact matrix, alg 2                                                                                & 0.023159                                &                                      \\ \hline
+Cell centric compact matrix, alg 3                                                                                & 1.84389                                 &                                      \\ \hline
+\end{tabular}
+\caption {MM framework measurements}
+\label{tab:MM}
+\end{table}
+
+The results show that the although at the present state of the implementation,
+the hand-written code performs much better than our framework, the code
+generation algorithm has a huge effect on the efficiency of the resulting
+code. Another thing to note is the poor performance in case of algorithm 3,
+which involves neighbour access. This is due to the fact that when accessing
+neighbours, the existence of the neighbour is always checked, although this is
+not necessary and the hand-written version does not perform these unnecessary
+checks.
 
 \chapter{Future work}
 
