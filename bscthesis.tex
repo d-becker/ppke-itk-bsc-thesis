@@ -1312,6 +1312,37 @@ difficult to handle in the case of some data structures.
 
 \chapter{Conclusion}
 
+The concept of active libraries, frameworks that look like traditional
+programming libraries but employ some form of modification in the compilation
+process, most commonly code generation, to tailor the resulting program to the
+specific characteristics of the target hardware architecture, have been used
+successfully in the past in frameworks such as OPS and OP2 described earlier in
+this work, where they are a key factor in achieving near-optimal run-time
+performance. This has led us to choose the same strategy in our framework and
+adopt the active library method.
+
+The abstract interface of our framework was designed with parallelisation and
+code generation in mind, where information that can help the code generator or
+even traditional compilers to optimise and efficiently parallelise the resulting
+code is made explicit by the framework, and therefore easily accessible by
+compilation or code generation tools.
+
+The advantages of abstracting away parallelisation together with the use and
+possibly also the choice of data structures can clearly be seen even at this
+early stage of the implementation of our framework. This makes it easier for
+scientists who are not experts at computer science and parallel computations to
+write domain-specific scientific code. The readability of the code base also
+increases as implementation details that are not important for the understanding
+of the algorithm are hidden behind the abstraction.
+
+The development of the framework is still in its early stages, therefore a huge
+amount of work remains to be done. The implementation of efficient code
+generation is vital for the usability of the abstraction, as is the support for
+different parallel hardware architectures, most notably GPUs. As we progress
+with the development of the framework, we shall seek to find ways to gradually
+migrate existing code bases to our framework, and finally, to integrate the
+abstraction into OPS and OP2.
+
 \printbibliography
 
 %% \appendix
