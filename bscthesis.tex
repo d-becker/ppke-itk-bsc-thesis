@@ -387,7 +387,11 @@ structured and unstructured meshes, and possibly even become a part of them.
 Other frameworks we should mention include ExaStencils \cite{ExaStencils}, which
 is not an active library but has a similar scope to that of OPS, ExaSlang
 \cite{ExaSlang}, which can be used for multigrid algorithms and Snowflake
-\cite{Snowflake}, which is embedded in Python but also uses code generation.
+\cite{Snowflake}, which is a DSL embedded in Python but also uses code
+generation. All the three frameworks are for algorithms involving neighbour
+access through stencils, on single-material meshes. Our abstraction differs from
+these in that it allows multiple materials to be present at the same grid
+point. We will elaborate on this later in this thesis.
 
 \subsection{OPS}
 
