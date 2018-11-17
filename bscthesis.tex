@@ -18,7 +18,7 @@
 % Kódrészletekhez ajánlom
 \usepackage{listings, scrhack}
 \usepackage{sourcecodepro} % egy jó betűtípus
-\lstset{captionpos=b, numberbychapter=false, basicstyle=\ttfamily, showstringspaces=false, columns=fullflexible}
+\lstset{captionpos=b, numberbychapter=false, basicstyle=\ttfamily, showstringspaces=false, columns=fullflexible, numbers=left, basicstyle=\small}
 %% \renewcommand\lstlistingname{kódrészlet}
 \makeatletter
 \renewcommand\fnum@lstlisting{\ifx\lst@@caption\@empty\else\thelstlisting.~\fi\lstlistingname}%
@@ -1186,7 +1186,7 @@ variable (both defined by both cells and materials), calculate the total mass of
 the materials in each cell. This involves summing the masses of the individual
 materials in each cell.
 
-\begin{lstlisting}
+\begin{lstlisting}[language=c++]
 const std::size_t COLS = 200;
 const std::size_t ROWS = 200;
 
@@ -1223,7 +1223,7 @@ computation.compute(
 
 The next example illustrates how mesh-invariant datasets can be used.
 
-\begin{lstlisting}
+\begin{lstlisting}[language=c++]
 const std::size_t COLS = 128;
 
 // All cells are single-material and contain the same material.
@@ -1261,6 +1261,27 @@ computation.compute(
 
 % TODO: Hozni példának a multi cikkből az algoritmusokat és a megvalósításukat a
 % mi kódunkkal, főleg a szomszédságosat.
+
+We conclude this chapter by showing an example of a multimaterial computation,
+taken from \cite{osti_1341844}, written by hand and using our framework. The
+computation calculates the average density of each material over a neighbourhood
+of cells, weighting them inversely proportionally to the square of their
+distance from the actual cell. The problem is defined on a two-dimensional mesh,
+so the number of neighbours including the actual cell is 9.
+
+The hand-written version, which uses OMP for parallelisation and the
+cell-centric compressed representation to store the data, is shown below:
+
+\lstinputlisting[language=c++]{handwritten_example.cpp}
+
+The version using our framework is shown below:
+
+\lstinputlisting[language=c++]{mm_example.cpp}
+
+The above examples clearly show that using our framework reduces the size of the
+code and makes it much easier to read. The user can concentrate on the
+scientific problem and leave the explicit handling of the loops and data access
+to the framework.
 
 \section{Measurements}
 
