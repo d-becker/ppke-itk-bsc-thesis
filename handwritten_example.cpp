@@ -1,16 +1,5 @@
 // Computational loop 3 - Average density of each material over neighborhood of each cell
-#if defined(OMP)
-#pragma omp parallel for //collapse(2)
-#elif defined(ACC)
-#pragma acc parallel
-#pragma acc loop independent
-#endif
 for (int j = 1; j < sizey-1; j++) {
-#if defined(OMP)
-#pragma omp simd
-#elif defined(ACC)
-#pragma acc loop independent
-#endif
     for (int i = 1; i < sizex-1; i++) {
 	// o: outer
 	double xo = ccc.x[i+sizex*j];
@@ -39,14 +28,7 @@ for (int j = 1; j < sizey-1; j++) {
 	if (ix <= 0) {
 	    // condition is 'ix >= 0', this is the equivalent of
 	    // 'until ix < 0' from the paper
-#ifdef LINKED
 	    for (ix = -ix; ix >= 0; ix = ccc.nextfrac[ix]) {
-#else
-		for (int ix = ccc.mmc_index[-ccc.imaterial[i+sizex*j]];
-		     ix < ccc.mmc_index[-ccc.imaterial[i+sizex*j]+1];
-		     ix++) {
-#endif
-
 		    int mat = ccc.matids[ix];
 		    double rho_sum = 0.0;
 		    int Nn = 0;
@@ -60,13 +42,7 @@ for (int j = 1; j < sizey-1; j++) {
 			    if (jx <= 0) {
 				// condition is 'jx >= 0', this is the equivalent of
 				// 'until jx < 0' from the paper
-#ifdef LINKED
 				for (jx = -jx; jx >= 0; jx = ccc.nextfrac[jx]) {
-#else
-				    for (int jx = ccc.mmc_index[-ccc.imaterial[ci+sizex*cj]];
-					 jx < ccc.mmc_index[-ccc.imaterial[ci+sizex*cj]+1];
-					 jx++) {
-#endif
 					if (ccc.matids[jx] == mat) {
 					    rho_sum += ccc.rho_compact_list[jx] /
 						dsqr[(nj+1)*3 + (ni+1)];
@@ -120,13 +96,7 @@ for (int j = 1; j < sizey-1; j++) {
 			    if (jx <= 0) {
 				// condition is 'jx >= 0', this is the equivalent of
 				// 'until jx < 0' from the paper
-#ifdef LINKED
 				for (jx = -jx; jx >= 0; jx = ccc.nextfrac[jx]) {
-#else
-				    for (int jx = ccc.mmc_index[-ccc.imaterial[ci+sizex*cj]];
-					 jx < ccc.mmc_index[-ccc.imaterial[ci+sizex*cj]+1];
-					 jx++) {
-#endif
 					if (ccc.matids[jx] == mat) {
 					    rho_sum += ccc.rho_compact_list[jx] /
 						dsqr[(nj+1)*3 + (ni+1)];

@@ -51,15 +51,14 @@ void kernel(NeighProxy<CellData<2>> x,
 	    }
 	}
 	rho_out = rho_sum / Nn;
-    } else
+    } else {
 	rho_out = 0.0;
+    }
 }
-
 
 Stencil<2> s9pt({{1,1},  {1,0},  {1,-1},
 		 {0,1},  {0,0},  {0,-1},
 		 {-1,1}, {-1,0}, {-1,-1}});
-
 IndexGenerator<2> index_generator({1, 1}, {sizex-1, sizey-1});
 Computation<2> computation(data, index_generator);
 
