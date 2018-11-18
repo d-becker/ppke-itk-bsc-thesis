@@ -20,6 +20,11 @@
 \usepackage{sourcecodepro} % egy jó betűtípus
 \lstset{captionpos=b, numberbychapter=false, basicstyle=\ttfamily, showstringspaces=false, columns=fullflexible, numbers=left, basicstyle=\small}
 %% \renewcommand\lstlistingname{kódrészlet}
+
+\newif\ifTDK
+\TDKfalse
+\TDKtrue % Comment out to compile thesis.
+
 \makeatletter
 \renewcommand\fnum@lstlisting{\ifx\lst@@caption\@empty\else\thelstlisting.~\fi\lstlistingname}%
 \makeatother
@@ -32,8 +37,13 @@
   }
 }
 
-\subject{Thesis}
+\ifTDK
 % TDK-ra: Student Research Competition, ha nincs más hivatalos.
+  \subject{Student Research Competition}
+\else
+  \subject{Thesis}
+\fi
+
 \addbibresource{bscthesis.bib}
 
 \author{Dániel Balázs Becker\\Computer Science Engineering BSc}
@@ -52,6 +62,8 @@
 \begin{document}
 \maketitle
 
+\ifTDK
+\else
 \pushtobottom
 I, undersigned Dániel Balázs Becker, student of the Faculty of
 Information Technology and Bionics at Pázmány Péter Catholic University, declare
@@ -60,6 +72,7 @@ help, and I have only used the sources referenced. Every part quoted word by
 word or in a paraphrased manner is indicated clearly, with a reference made. I
 have not submitted this thesis in any other training program.
 \signatureline{Signature}
+\fi
 
 \tableofcontents
 \newpage
@@ -1257,10 +1270,6 @@ computation.compute(
 	NEIGH<CellData<1>>(input, neighs),
 	OUT<CellData<1>>(output));
 \end{lstlisting}
-
-
-% TODO: Hozni példának a multi cikkből az algoritmusokat és a megvalósításukat a
-% mi kódunkkal, főleg a szomszédságosat.
 
 We conclude this chapter by showing an example of a multimaterial computation,
 taken from \cite{osti_1341844}, written by hand and using our framework. The
